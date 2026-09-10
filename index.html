@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>TRON — Algoritma Arena'sı + IMPROVE</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #05060a; color: #cfd8dc;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 14px;
+  }
+  h1 { font-size: 22px; letter-spacing: 6px; font-weight: 600;
+       color: #00e5ff; text-shadow: 0 0 18px rgba(0,229,255,.55); margin-bottom: 2px; }
+  .sub { font-size: 12px; color: #5f6a72; margin-bottom: 10px; letter-spacing: 1px; }
+
+  .alan { display: flex; gap: 12px; align-items: flex-start; }
+
+  #bar {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    font-size: 13px; width: 900px; flex-wrap: wrap;
+  }
+  .score { padding: 4px 12px; border-radius: 8px; background: #0b0e15; }
+  .score b { font-size: 16px; }
+  #sSol b { color: #00e5ff; text-shadow: 0 0 8px rgba(0,229,255,.6); }
+  #sSag b { color: #ff9100; text-shadow: 0 0 8px rgba(255,145,0,.6); }
+  .sec { display: flex; align-items: center; gap: 4px; color: #5f6a72; font-size: 12px; }
+  .sec select {
+    background: #0b0e15; color: #cfd8dc; border: 1px solid #1c232e;
+    border-radius: 6px; padding: 3px 5px; font-size: 12px; cursor: pointer;
+  }
+  .sec select.sol-renk { color: #00e5ff; }
+  .sec select.sag-renk { color: #ff9100; }
+  #btnBaslat {
+    background: #10251c; color: #69f0ae; border: 1px solid #2e6b4a;
+    border-radius: 6px; padding: 4px 12px; font-size: 12.5px; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer;
+  }
+  #btnBaslat:hover { box-shadow: 0 0 10px rgba(105,240,174,.35); }
+  #btnImprove {
+    background: #241433; color: #b388ff; border: 1px solid #4a2e6b;
+    border-radius: 6px; padding: 4px 12px; font-size: 12.5px; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer;
+  }
+  #btnImprove:hover { box-shadow: 0 0 10px rgba(179,136,255,.4); }
+  #btnImprove:disabled { opacity: .4; cursor: wait; }
+  #btnDosyalar {  #btnSeri {
+    background: #14202c; color: #80d8ff; border: 1px solid #2a4a5e;
+    border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+  }
+  #btnSeri:hover { box-shadow: 0 0 8px rgba(128,216,255,.35); }
+  #btnSeri:disabled { opacity: .4; cursor: wait; }  #btnEgitim100 {
+    background: #241433; color: #b388ff; border: 1px solid #4a2e6b;
+    border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+  }
+  #btnEgitim100:hover { box-shadow: 0 0 8px rgba(179,136,255,.35); }
+  #btnEgitim100:disabled { opacity: .4; cursor: wait; }  #btnEgitim100:disabled { opacity: .4; cursor: wait; }
+
+  /* ---------- YAYIN MODU ---------- */
+  body.yayinModu { padding: 0; }
+  body.yayinModu h1 { font-size: 18px; margin-top: 4px; }
+  body.yayinModu .sub, body.yayinModu #yardim, body.yayinModu .statbar { display: none; }
+  #altyazi {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(0,0,0,.85); text-align: center;
+    padding: 12px 20px 16px; font-size: 22px; font-weight: 600;
+    color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.9);
+    border-top: 3px solid #00e5ff; display: none;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 48px; line-height: 1.4;
+  }
+  #altyazi .renk { font-weight: 800; }
+  #yayinBildirim {
+    position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 101;
+    background: rgba(0,229,255,.15); border: 2px solid #00e5ff; border-radius: 12px;
+    padding: 10px 28px; font-size: 20px; font-weight: 700; color: #fff;
+    text-shadow: 0 0 10px rgba(0,229,255,.7); display: none;
+    text-align: center; letter-spacing: 1px;
+  }
+  .canliKart pre { font-size: 12px !important; }
+  .msg { font-size: 14px !important; }
+  .msg .kim { font-size: 12px !important; }
+    background: #0b0e15; color: #9aa7b0; border: 1px solid #1c232e;
+    border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer;
+  }
+  #btnDosyalar:hover { color: #69f0ae; border-color: #2e6b4a; }
+  .hizlar { display: flex; align-items: center; color: #5f6a72; font-size: 12px; }
+  .hizlar button {
+    background: #0b0e15; color: #9aa7b0; border: 1px solid #1c232e;
+    border-radius: 6px; padding: 4px 9px; margin-left: 4px; font-size: 12px; cursor: pointer;
+  }
+  .hizlar button.secili { color: #00e5ff; border-color: #00e5ff; box-shadow: 0 0 8px rgba(0,229,255,.35); }
+  #saha { border: 1px solid #1c232e; border-radius: 4px; display: block; }
+  #yardim { margin-top: 8px; font-size: 12px; color: #5f6a72; letter-spacing: .5px; width: 900px; }
+  #overlay {
+    position: absolute; display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: transparent; pointer-events: none; text-align: center;
+  }
+  #overlay .buyuk { font-size: 34px; font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 8px #000, 0 0 14px #000; }
+  #overlay .kucuk { margin-top: 10px; color: #cfd8de; font-size: 14px; text-shadow: 0 1px 6px #000; }
+  #wrap { position: relative; }
+
+  .panel {
+    width: 300px; height: 672px;
+    background: #0b0e15; border: 1px solid #1c232e; border-radius: 10px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .panel .baslik { padding: 9px 12px 8px; border-bottom: 1px solid #1c232e; }
+  .panel .t1 { font-size: 13.5px; font-weight: 600; letter-spacing: 1px; }
+  .panel .t1 .surum { font-size: 11px; color: #69f0ae; margin-left: 6px; }
+  .panel .t2 { font-size: 10px; color: #5f6a72; margin-top: 3px; line-height: 1.35; }
+  #panelSag .t1  { color: #ff9100; }
+  #panelSol .t1 { color: #00e5ff; }
+
+  .nokta { display:inline-block; width:8px; height:8px; border-radius:50%;
+           background:#556; margin-right:6px; vertical-align:middle; }
+  .nokta.canli { background:#69f0ae; box-shadow:0 0 8px #69f0ae; animation:yanipsn 1.2s infinite; }
+  @keyframes yanipsn { 50% { opacity:.35; } }
+
+  .dusunme { margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .dusunme span { font-size: 10.5px; color: #5f6a72; }
+  .dusunme select {
+    background: #0d1219; color: #b388ff; border: 1px solid #2a2440;
+    border-radius: 5px; padding: 2px 5px; font-size: 10.5px; cursor: pointer;
+  }
+
+  /* ---------- HAFIZA ÇEKMECESİ (panel başına) ---------- */
+  .ustSekme { display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+              background: #0e131c; border-bottom: 1px solid #1c232e; }
+  .hafizaTgl { flex: 1; text-align: left; background: #0d1219; color: #9aa7b0;
+               border: 1px solid #1c232e; border-radius: 6px; padding: 3px 8px;
+               font-size: 11px; cursor: pointer; }
+  .hafizaTgl.acik { color: #69f0ae; border-color: #2e6b4a; }
+  .improveBtn { background: #241433; color: #b388ff; border: 1px solid #4a2e6b;
+                border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .improveBtn:hover { box-shadow: 0 0 8px rgba(179,136,255,.35); }
+  .improveBtn:disabled { opacity: .4; cursor: wait; }
+  .cekmek { border-bottom: 1px solid #1c232e; background: #080b10; }
+  .cekAraclar { display: flex; align-items: center; gap: 8px; padding: 5px 8px; }
+  .cekAraclar button { background: #0d1219; color: #9aa7b0; border: 1px solid #1c232e;
+                       border-radius: 5px; padding: 2px 8px; font-size: 10.5px; cursor: pointer; }
+  .cekAraclar button:hover { color: #69f0ae; }
+  .cekAraclar .durum { font-size: 10.5px; color: #69f0ae; }
+  .cekGovde { display: flex; height: 250px; }
+  .cekListe { width: 158px; border-right: 1px solid #1c232e; overflow-y: auto;
+              font-family: Consolas, monospace; font-size: 10.5px; padding: 4px; }
+  .cekListe .df { padding: 2px 4px; cursor: pointer; color: #9aa7b0; border-radius: 3px;
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cekListe .df:hover { background: #121a26; color: #69f0ae; }
+  .cekListe .df.secili { background: #10251c; color: #69f0ae; }
+  .cekIcerik { max-height: 250px; overflow-y: auto; padding: 8px 10px;
+               font-family: Consolas, monospace; font-size: 10.5px; color: #c3ccd4;
+               white-space: pre-wrap; line-height: 1.55; flex: 1; }
+
+  .sohbet { flex: 1; overflow-y: auto; padding: 9px 9px 6px; }
+  .sohbet::-webkit-scrollbar { width: 8px; }
+  .sohbet::-webkit-scrollbar-thumb { background: #1c232e; border-radius: 4px; }
+
+  .msg {
+    font-size: 11.5px; line-height: 1.45; margin-bottom: 7px;
+    padding: 6px 9px; border-radius: 9px; background: #0d1219;
+    border: 1px solid #1a2230; animation: giris .18s ease-out;
+  }
+  @keyframes giris { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .msg .kim { font-size: 10px; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 2px; }
+  .msg .saat { color: #3d4750; font-size: 9.5px; float: right; }
+  .msg.bot   { border-color: #4a3010; }
+  .msg.bot .kim   { color: #ff9100; }
+  .msg.insan { border-color: #0e3d47; }
+  .msg.insan .kim { color: #00e5ff; }
+  .msg.uyari { border-color: #5c1f1c; background: #150c0c; }
+  .msg.uyari .kim { color: #ff5252; }
+  .msg.agent { border-color: #3a2a55; background: #100c18; }
+  .msg.agent .kim { color: #b388ff; }
+  .msg.sistem { background: transparent; border: 1px dashed #232c38; color: #5f6a72; font-size: 10.5px; text-align: center; }
+  .msg.sistem .kim { display: none; }
+
+  .statbar {
+    padding: 7px 10px; border-top: 1px solid #1c232e;
+    font-size: 10.5px; color: #9aa7b0; background: #090c12; line-height: 1.5;
+  }
+  .statbar b { color: #00e5ff; }
+
+  #tablo {
+    width: 900px; margin-top: 8px;
+    background: #0b0e15; border: 1px solid #1c232e; border-radius: 10px; padding: 8px 12px;
+  }
+  #tablo .tbaslik { font-size: 11px; color: #5f6a72; letter-spacing: 1px; margin-bottom: 5px; }
+  #tablo table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #tablo th { color: #5f6a72; font-weight: 600; font-size: 10.5px; letter-spacing: 1px; padding: 2px 6px; }
+  #tablo td { padding: 3px 6px; color: #9aa7b0; }
+  #tablo th.sayi, #tablo td.sayi { text-align: right; font-variant-numeric: tabular-nums; }
+  #tablo tr.ust td { color: #69f0ae; font-weight: 600; }
+  /* ---------- ALAN HÜKMÜ BARI ---------- */
+  #alanBarWrap { width: 900px; margin-top: 8px; background: #0b0e15; border: 1px solid #1c232e;
+                 border-radius: 10px; padding: 8px 12px; }
+  #alanBarBaslik { font-size: 11px; color: #5f6a72; letter-spacing: 1px; margin-bottom: 5px; }
+  #alanBar { display: flex; height: 18px; border-radius: 6px; overflow: hidden;
+             border: 1px solid #141a24; }
+  #alanSolBolum { background: #00e5ff; transition: width .3s; }
+  #alanSagBolum { background: #ff9100; transition: width .3s; }
+  #alanYazi { margin-left: 10px; font-size: 11px; color: #9aa7b0; white-space: nowrap; }
+  /* ---------- CANLI AJAN ↔ GLM PANELLERİ ---------- */
+  .canliAlan { display: flex; gap: 12px; margin-top: 8px; width: 900px; }
+  .canliKart { flex: 1; background: #0b0e15; border: 1px solid #1c232e; border-radius: 10px;
+               overflow: hidden; height: 230px; display: flex; flex-direction: column; }
+  .canliKart .cbas { padding: 6px 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 1px;
+                     border-bottom: 1px solid #1c232e; display: flex; justify-content: space-between; }
+  #canliSolKart .cbas { color: #00e5ff; }
+  #canliSagKart .cbas { color: #ff9100; }
+  .canliKart .cbas .durumYazi { font-size: 10px; color: #69f0ae; }
+  .canliKart pre { flex: 1; overflow: auto; margin: 0; padding: 6px 10px;
+                   font-family: Consolas, monospace; font-size: 10.5px; line-height: 1.45;
+                   color: #9aa7b0; white-space: pre-wrap; word-break: break-all; }
+
+
+  /* ---------- DOSYA GEZGİNİ ---------- */
+  #dosyaModal {
+    display: none; position: fixed; inset: 0; z-index: 50;
+    background: rgba(3,5,9,.85);
+  }
+  #dosyaModal .ic {
+    width: min(1100px, 94vw); height: min(700px, 90vh); margin: 4vh auto;
+    background: #0b0e15; border: 1px solid #2e6b4a; border-radius: 12px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  #dosyaModal .basl {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; border-bottom: 1px solid #1c232e;
+  }
+  #dosyaModal .basl .b1 { font-size: 14px; font-weight: 600; color: #69f0ae; letter-spacing: 1px; }
+  #dosyaModal .basl .b2 { font-size: 11px; color: #5f6a72; }
+  #dosyaModal .govde { flex: 1; display: flex; overflow: hidden; }
+  #dosyaAgac {
+    width: 340px; border-right: 1px solid #1c232e; overflow-y: auto; padding: 8px;
+    font-family: Consolas, monospace; font-size: 13px;
+  }
+  #dosyaAgac .dosya { color: #9aa7b0; padding: 4px 6px; cursor: pointer; border-radius: 4px; line-height: 1.4; }
+  #dosyaIcerik {
+    flex: 1; overflow: auto; padding: 14px 18px;
+    font-family: Consolas, monospace; font-size: 13.5px; color: #c3ccd4; white-space: pre-wrap; line-height: 1.6;
+  }
+  #dosyaKapat {
+    background: #0b0e15; color: #9aa7b0; border: 1px solid #1c232e;
+    border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <h1>T R O N</h1>
+  <div class="sub">arena + iyileştirme döngüsü: maç → telemetri → analist ajan → hakem → yeni playbook sürümü</div>
+
+  <div class="alan">
+    <div class="panel" id="panelSol">
+      <div class="ustSekme">
+        <button class="hafizaTgl" id="tglSol" title="SOL AVCI'nın playbook'u, turları, maç kayıtları ve analist arşivi — büyük pencerede">📁 hafıza &amp; prompt</button>
+        <button id="btnImproveSol" class="improveBtn" title="Agent-2 (GLM-5.3-Flash): maç kaydını oku, playbook'a kural öner">🔧 IMPROVE</button>
+      </div>
+      <div class="baslik">
+        <div class="t1"><span id="solT1">🧍 İNSAN</span><span class="surum" id="surumSol"></span></div>
+        <div class="t2" id="solT2">ajan: kendi JS kodunu yazar, IMPROVE ile geliştirir</div>
+        <div class="dusunme"><span>düşünme:</span>
+          <select id="selDusunSol"><option value="min">min</option><option value="high">high</option><option value="max" selected>max</option></select>
+          <span title="model kaç adıma kadar devam edebilir (kendisi karar verir, bu yalnızca tavan)">maks adım</span> <input id="adimMaksSol" type="number" min="3" max="60" value="24" style="width:52px">
+        </div>
+      </div>
+      <div class="sohbet" id="sohbetSol"></div>
+      <div class="statbar" id="solStat">istatistik: maç akıyor…</div>
+    </div>
+
+    <div>
+      <div id="bar">
+        <span class="score" id="sSol"><span id="lblSol">AVCI</span> <b>0</b></span>
+        <span class="score" id="sSag"><span id="lblSag">AVCI</span> <b>0</b></span>
+        <span class="sec">SOL:
+          <select id="selSol" class="sol-renk">
+            <option value="insan">🧍 İNSAN</option>
+            <option value="terra">🤖 TERRA</option>
+            <option value="general">♟️ GENERAL</option>
+            <option value="monti">🎲 MONTİ</option>
+            <option value="duvarci">🧱 DUVARCI</option>
+            <option value="avci">🗡️ AVCI</option>
+            <option value="ai" selected>🧠 AI (ajan kodu)</option>
+          </select>
+        </span>
+        <span class="sec">SAĞ:
+          <select id="selSag" class="sag-renk">
+            <option value="terra">🤖 TERRA</option>
+            <option value="general">♟️ GENERAL</option>
+            <option value="monti">🎲 MONTİ</option>
+            <option value="duvarci">🧱 DUVARCI</option>
+            <option value="avci">🗡️ AVCI</option>
+            <option value="ai" selected>🧠 AI (ajan kodu)</option>
+          </select>
+        </span>
+        <button id="btnBaslat">▶ BAŞLAT</button>
+        <button id="btnDosyalar">📁 DOSYALAR</button>
+        <button id="btnSeri" title="10 maçlik otomatik seri: her maç sonrasi kaybeden improve eder">🏁 SERIx10</button>
+        <button id="btnEgitim100" title="100 oyunluk egitim serisi — kaybeden her turda otomatik IMPROVE">🎓 EGIITIMx100</button>
+        <button id="btnOtoImprove" title="maç sonunda kaybeden ajanın otomatik IMPROVE'a girmesi: açık/kapalı">🤖 OTO-IMPROVE: AÇIK</button>
+        <button id="btnHepsiDurdur" title="maçı, IMPROVE döngüsünü ve serileri durdurur; ajanlar konuşmayı bırakır, mevcut sürümden BAŞLAT ile devam edilir">⏹ HEPSİNİ DURDUR</button>
+        <span class="hizlar">tempo:
+          <button data-ms="180">yavaş</button>
+          <button data-ms="130" class="secili">normal</button>
+          <button data-ms="85">hızlı</button>
+          <button data-ms="40">🚀 turbo</button>
+          <button data-ms="1" data-carpan="6" title="egitim modu: ~480 tik/sn">🎓 EGITIM 120x</button>
+        </span>
+      </div>
+      <div id="wrap">
+        <canvas id="saha" width="900" height="600"></canvas>
+        <div id="overlay">
+          <div class="buyuk" id="oBaslik"></div>
+          <div class="kucuk" id="oAlt"></div>
+        </div>
+      </div>
+      <div class="canliAlan">
+        <div class="canliKart" id="canliSolKart">
+          <div class="cbas"><span>🛰️ SOL AJAN ↔ GLM</span><span class="durumYazi" id="canliSolDurum">beklemede</span></div>
+          <pre id="canliSol">—</pre>
+        </div>
+        <div class="canliKart" id="canliSagKart">
+          <div class="cbas"><span>🛰️ SAĞ AJAN ↔ GLM</span><span class="durumYazi" id="canliSagDurum">beklemede</span></div>
+          <pre id="canliSag">—</pre>
+        </div>
+      </div>
+      <div id="alanBarWrap">
+        <div id="alanBarBaslik">🌍 ALAN HÜKMÜ — kimin nefes alanı geniş? (Voronoi, canlı)</div>
+        <div id="alanBar">
+          <div id="alanSolBolum" style="width:50%"></div>
+          <div id="alanSagBolum" style="width:50%"></div>
+        </div>
+        <div id="alanYazi">ölçüm: maç başlayınca</div>
+      </div>
+      <div id="yardim">BAŞLAT: yeni maç · IMPROVE: yalnız maç bittiğinde — analist okur, kural önerir, hakem karar verir · DOSYALAR: beyin klasörünü gez</div>
+      <div id="tablo"></div>
+    </div>
+
+    <div class="panel" id="panelSag">
+      <div class="ustSekme">
+        <button class="hafizaTgl" id="tglSag" title="SAĞ AVCI'nın playbook'u, turları, maç kayıtları ve analist arşivi — büyük pencerede">📁 hafıza &amp; prompt</button>
+        <button id="btnImproveSag" class="improveBtn" title="Agent-1 (GLM-5.3-Flash): maç kaydını oku, playbook'a kural öner">🔧 IMPROVE</button>
+      </div>
+      <div class="baslik">
+        <div class="t1"><span class="nokta" id="nabiz"></span><span id="sagT1">🗡️ AVCI</span><span class="surum" id="surumSag"></span></div>
+        <div class="t2" id="sagT2">ajan: kendi JS kodunu yazar, IMPROVE ile geliştirir</div>
+        <div class="dusunme"><span>düşünme:</span>
+          <select id="selDusunSag"><option value="min">min</option><option value="high">high</option><option value="max" selected>max</option></select>
+          <span title="model kaç adıma kadar devam edebilir (kendisi karar verir, bu yalnızca tavan)">maks adım</span> <input id="adimMaksSag" type="number" min="3" max="60" value="24" style="width:52px">
+        </div>
+      </div>
+      <div class="sohbet" id="sohbetSag"></div>
+    </div>
+  </div>
+
+  <div id="yayinBildirim"></div>
+  <div id="altyazi"></div>
+  <!-- DOSYA GEZGİNİ / HAFIZA POP-UP -->
+  <div id="dosyaModal">
+    <div class="ic">
+      <div class="basl">
+        <div><div class="b1" id="dosyaBaslik1">📁 beyin klasörü — canlı görünüm</div>
+             <div class="b2" id="dosyaBaslik2">listede yalnız anlamlı dosyalar: playbook (algoritma) · defter (hakem) · turlar (her improve'un tam kaydı) · paket/iz (maç verisi) — ham arşiv için DOSYALAR görünümü</div></div>
+        <div style="display:flex; gap:6px;">
+          <button id="btnGelisim" title="sürüm sürüm: kaç kural, kaç maç, kazanma oranı">📈 gelişim</button>
+          <button id="dosyaYenile">🔄 yenile</button>
+          <button id="dosyaKapat">kapat ✕</button>
+        </div>
+      </div>
+      <div class="govde">
+        <div id="dosyaAgac"></div>
+        <pre id="dosyaIcerik">soldan bir dosya seç…</pre>
+      </div>
+    </div>
+  </div>
+
+<script>
+"use strict";
+const COLS = 45, ROWS = 30, CELL = 20;
+const cv = document.getElementById("saha"), cx = cv.getContext("2d");
+const overlay = document.getElementById("overlay");
+const sohbetSolEl = document.getElementById("sohbetSol");
+const sohbetSagEl = document.getElementById("sohbetSag");
+const nabizEl = document.getElementById("nabiz");
+const solStatEl = document.getElementById("solStat");
+
+const RENK = { insan: "#00e5ff", bot: "#ff9100", bg: "#05060a", grid: "#0c1018", duvar: "#1c232e" };
+const YON = { U: {x:0,y:-1}, D: {x:0,y:1}, L: {x:-1,y:0}, R: {x:1,y:0} };
+const YONAD = { U:"yukarı", D:"aşağı", L:"sola", R:"sağa" };
+const YONLER = ["U","D","L","R"];
+const SOL  = { U:"L", L:"D", D:"R", R:"U" };
+const SAG  = { U:"R", R:"D", D:"L", L:"U" };
+const BEYIN_AD = { insan:"🧍 İNSAN", terra:"🤖 TERRA", general:"♟️ GENERAL", monti:"🎲 MONTİ",
+                   duvarci:"🧱 DUVARCI", avci:"🗡️ AVCI", ai:"🧠 AI" };
+const BEYIN_KIM = { insan:"İNSAN", terra:"TERRA", general:"GENERAL", monti:"MONTİ",
+                    duvarci:"DUVARCI", avci:"AVCI", ai:"AI" };
+const ALAN_TR = { bolgePayim:"bölge payım", rakipMesafe:"rakip mesafe", onAciklik:"önümdeki açık",
+                  sonDuzluk:"son düzlük", kafaRiski:"kafa riski", olumTehlikesi:"ölüm tehlikesi" };
+const MOD_TR = { kacis:"kaçış modu", av:"2× kovalama", genis:"bölge büyütme" };
+
+let grid, oyuncular, running = false, bekleme = false;
+let stepMs = 130, egitimCarpan = 1, skor = { sol: 0, sag: 0 };
+let solBeyin = "ai", sagBeyin = "ai";
+let rastgele = Math.random;   // simülasyonlarda tohumlanabilir RNG ile değiştirilir
+
+// ---------- AJAN ALTYAPISI: her tarafın kendi evrilen JS kodu (sandbox Worker) ----------
+let sonAIYon = { sol: "R", sag: "L" };
+let ajanBekleyen = { sol: 0, sag: 0 };   // cevabı gelmemiş durum sayısı: motor taze karar gelmeden tik atmaz (bayat yön koruması)
+let ajanSurum = { sol: 0, sag: 0 };
+let ajanWorker = { sol: null, sag: null };
+let ajanHataSay = { sol: 0, sag: 0 };
+function ajanSurumYazi(taraf) {
+  return "v1." + String(ajanSurum[taraf]).padStart(3, "0");
+}
+const AI_STUB = `function yonBul(durum) {
+  const W = 45, H = 30;
+  const V = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0] };
+  const TERS = { U: "D", D: "U", L: "R", R: "L" };
+  const b = durum.ben;
+  const guvenli = [];
+  for (const d of ["U", "D", "L", "R"]) {
+    if (d === TERS[b.yon]) continue;
+    const nx = b.x + V[d][0], ny = b.y + V[d][1];
+    if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+    if (durum.iz[ny][nx] !== ".") continue;
+    guvenli.push(d);
+  }
+  if (!guvenli.length) return b.yon;
+  let enIyi = guvenli[0], enAcik = -1;
+  for (const d of guvenli) {
+    let acik = 0, x = b.x + V[d][0], y = b.y + V[d][1];
+    while (x >= 0 && y >= 0 && x < W && y < H && durum.iz[y][x] === "." && acik < 12) {
+      acik++; x += V[d][0]; y += V[d][1];
+    }
+    if (acik > enAcik) { enAcik = acik; enIyi = d; }
+  }
+  return enIyi;
+}`;
+
+function ajanWorkerKur(taraf, kod) {
+  if (ajanWorker[taraf]) { try { ajanWorker[taraf].terminate(); } catch (e) {} }
+  const kaynak = `
+    var f = null;
+    self.onmessage = function(e) {
+      var m = e.data;
+      if (m.tip === "kod") {
+        try { f = new Function("durum", m.kod + "\\nreturn yonBul(durum);"); self.postMessage({tip: "kodOk"}); }
+        catch (h) { f = null; self.postMessage({tip: "kodHata", hata: String(h)}); }
+      } else if (m.tip === "durum") {
+        var y = null;
+        if (f) { try { y = f(m.durum); } catch (h2) { self.postMessage({tip: "ajanHata", hata: String(h2)}); y = null; } }
+        var s = String(y == null ? "" : y).trim().toUpperCase();
+        var gecerli = (s === "U" || s === "D" || s === "L" || s === "R");
+        self.postMessage({tip: "yon", yon: gecerli ? s : null, ham: String(y == null ? "" : y)});
+      }
+    };`;
+  const w = new Worker(URL.createObjectURL(new Blob([kaynak], { type: "application/javascript" })));
+  w.onmessage = e => {
+    const m = e.data;
+    if (m.tip === "yon") { ajanBekleyen[taraf] = Math.max(0, (ajanBekleyen[taraf] || 0) - 1); if (m.yon) sonAIYon[taraf] = m.yon; }
+    else if (m.tip === "ajanHata") {
+      ajanHataSay[taraf]++;
+      if (ajanHataSay[taraf] % 3 === 1)
+        (taraf === "sol" ? solYaz : sagYaz)("uyari", "🧠 AJAN", "kodun hata attı (" + ajanHataSay[taraf] + ". kez) — IMPROVE ile düzelt");
+    }
+    else if (m.tip === "kodHata") (taraf === "sol" ? solYaz : sagYaz)("uyari", "🧠 AJAN", "yeni kod parse edilmedi: " + m.hata);
+  };
+  w.postMessage({ tip: "kod", kod });
+  ajanWorker[taraf] = w;
+}
+async function ajanBaslat(taraf) {
+  try {
+    const r = await fetch("/api/ajan?taraf=" + taraf);
+    const c = await r.json();
+    ajanWorkerKur(taraf, c.ok ? c.kod : AI_STUB);
+    if (c.ok) ajanSurum[taraf] = c.surum;
+  } catch (e) { ajanWorkerKur(taraf, AI_STUB); }
+  rozetGuncelle(taraf);
+}
+
+// ---------- playbook / analist durumu ----------
+let avciKurallar = { sol: [], sag: [] };
+let playbookOzet = { sol: null, sag: null };
+let improveCalisiyor = false;
+let macKayit = null;
+
+async function apiPost(yol, govde) {
+  const r = await fetch(yol, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(govde)});
+  return r.json();
+}
+async function playbookGetir(taraf) {
+  try {
+    const r = await fetch("/api/playbook?taraf=" + taraf);
+    const cevap = await r.json();
+    if (cevap.ok) {
+      avciKurallar[taraf] = cevap.playbook.kurallar.filter(k => k.durum === "aktif");
+      playbookOzet[taraf] = cevap.playbook;
+      rozetGuncelle(taraf);
+    }
+  } catch (e) { /* sunucu yoksa oyun yine oynanır */ }
+}
+function rozetGuncelle(taraf) {
+  const beyin = taraf === "sol" ? solBeyin : sagBeyin;
+  const el = document.getElementById(taraf === "sol" ? "surumSol" : "surumSag");
+  if (beyin === "ai") {
+    el.textContent = ajanSurumYazi(taraf);
+    el.title = "ajan kodu: ajanlar/" + taraf + "/avci.js — IMPROVE ile gelişir";
+    return;
+  }
+  const pb = playbookOzet[taraf];
+  if (!pb) return;
+  const aktif = pb.kurallar.filter(k => k.durum === "aktif").length;
+  el.textContent = pb.surum + " · " + aktif + " kural";
+  const son = (pb.gecmis || []).slice(-1)[0];
+  el.title = son ? (son.surum + " · " + son.degisiklik + " · hakem: " + son.hakem) : "taban algoritma";
+}
+
+// ---------- sohbet yardımcıları ----------
+function yaz(el, tip, kim, metin) {
+  const d = document.createElement("div");
+  d.className = "msg " + tip;
+  const saat = new Date().toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+  d.innerHTML = `<span class="saat">${saat}</span><span class="kim">${kim}</span>${metin}`;
+  el.appendChild(d);
+  while (el.children.length > 140) el.removeChild(el.firstChild);
+  if (otomatikKaydirma[el.id] !== false) el.scrollTop = el.scrollHeight;
+}
+
+// akıllı otomatik kaydırma: kullanıcı yukarı kaydırdıysa bot otomatik inmez; en alta dönünce devam eder
+const otomatikKaydirma = {};
+["sohbetSol", "sohbetSag", "canliSol", "canliSag"].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  otomatikKaydirma[id] = true;
+  el.addEventListener("scroll", () => {
+    otomatikKaydirma[id] = el.scrollTop + el.clientHeight >= el.scrollHeight - 30;
+  });
+});
+const solYaz = (tip, kim, metin) => yaz(sohbetSolEl, tip, kim, metin);
+const sagYaz = (tip, kim, metin) => yaz(sohbetSagEl, tip, kim, metin);
+const ikisineYaz = (metin) => { solYaz("sistem", "", metin); sagYaz("sistem", "", metin); };
+
+const kanal = {
+  sol: { tik: 0, sonYazim: 0, sonYon: null, kim: "🤖 SOL" },
+  sag: { tik: 0, sonYazim: 0, sonYon: null, kim: "🤖 SAĞ" },
+};
+function botGunlugu(taraf, karar) {
+  const k = kanal[taraf];
+  k.tik++;
+  const donus = karar.d !== k.sonYon;
+  if (!donus && karar.tip !== "uyari" && k.tik % 10 !== 0) return;
+  const simdi = performance.now();
+  if (simdi - k.sonYazim < 450) return;
+  k.sonYazim = simdi;
+  k.sonYon = karar.d;
+  const el = taraf === "sol" ? sohbetSolEl : sohbetSagEl;
+  yaz(el, karar.tip, k.kim, karar.metin);
+  if (taraf === "sag") { nabizEl.classList.add("canli"); setTimeout(() => nabizEl.classList.remove("canli"), 600); }
+}
+
+function aciklikOlc(x, y, d) {
+  let n = 0, px = x + YON[d].x, py = y + YON[d].y;
+  while (px >= 0 && py >= 0 && px < COLS && py < ROWS && grid[py][px] === 0 && n < 10) { n++; px += YON[d].x; py += YON[d].y; }
+  return n;
+}
+function yasalAdaylar(b) {
+  const adaylar = [b.dir, SOL[b.dir], SAG[b.dir]];
+  const yasal = [];
+  for (const d of adaylar) {
+    const nx = b.x + YON[d].x, ny = b.y + YON[d].y;
+    if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && grid[ny][nx] === 0) yasal.push(d);
+  }
+  return yasal;
+}
+function kafaNobeti(benIdx, adaylar) {
+  const rakip = oyuncular[1 - benIdx];
+  const guvenli = adaylar.filter(d => {
+    const nx = oyuncular[benIdx].x + YON[d].x, ny = oyuncular[benIdx].y + YON[d].y;
+    return Math.abs(nx - rakip.x) + Math.abs(ny - rakip.y) > 1;
+  });
+  return guvenli.length ? guvenli : adaylar;
+}
+
+// ---------- VORONOI ----------
+function bolgeHesapla(kaynaklar) {
+  const sahip = [];
+  for (let y = 0; y < ROWS; y++) sahip.push(grid[y].slice());
+  let katman = [];
+  for (const k of kaynaklar) {
+    for (const d of YONLER) {
+      const nx = k.x + YON[d].x, ny = k.y + YON[d].y;
+      if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && grid[ny][nx] === 0 && sahip[ny][nx] === 0) {
+        sahip[ny][nx] = k.kim; katman.push({x: nx, y: ny, kim: k.kim});
+      }
+    }
+  }
+  while (katman.length) {
+    const yeni = [];
+    for (const c of katman) {
+      for (const d of YONLER) {
+        const nx = c.x + YON[d].x, ny = c.y + YON[d].y;
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || grid[ny][nx] !== 0) continue;
+        const s = sahip[ny][nx];
+        if (s === 0) { sahip[ny][nx] = c.kim; yeni.push({x: nx, y: ny, kim: c.kim}); }
+        else if (s !== c.kim && s !== 3) sahip[ny][nx] = 3;
+      }
+    }
+    katman = yeni;
+  }
+  let a1 = 0, a2 = 0, sinir = 0, bos = 0;
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+    const v = sahip[y][x];
+    if (v === 1) a1++; else if (v === 2) a2++; else if (v === 3) sinir++;
+    if (grid[y][x] === 0) bos++;
+  }
+  return { a1, a2, sinir, bos };
+}
+function bolgeBenim(benIdx, adayBx, adayBy) {
+  const rakipIdx = 1 - benIdx;
+  const kimB = benIdx + 1, kimR = rakipIdx + 1;
+  const bx = adayBx === null ? oyuncular[benIdx].x : adayBx;
+  const by = adayBy === null ? oyuncular[benIdx].y : adayBy;
+  const v = bolgeHesapla([
+    {x: oyuncular[rakipIdx].x, y: oyuncular[rakipIdx].y, kim: kimR},
+    {x: bx, y: by, kim: kimB}
+  ]);
+  return benIdx === 0 ? { ben: v.a1, rakip: v.a2, sinir: v.sinir, bos: v.bos }
+                      : { ben: v.a2, rakip: v.a1, sinir: v.sinir, bos: v.bos };
+}
+function ulasilanAlan(g, sx, sy) {
+  const gorulen = new Set();
+  let katman = [{x: sx, y: sy}];
+  gorulen.add(sy * COLS + sx);
+  while (katman.length) {
+    const yeni = [];
+    for (const c of katman) {
+      for (const d of YONLER) {
+        const nx = c.x + YON[d].x, ny = c.y + YON[d].y;
+        const anahtar = ny * COLS + nx;
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || g[ny][nx] !== 0 || gorulen.has(anahtar)) continue;
+        gorulen.add(anahtar); yeni.push({x: nx, y: ny});
+      }
+    }
+    katman = yeni;
+  }
+  return gorulen.size;
+}
+
+// ---------- TERRA ----------
+function terraKarar(benIdx) {
+  const b = oyuncular[benIdx], rakip = oyuncular[1 - benIdx];
+  let yasal = yasalAdaylar(b);
+  const kim = benIdx === 0 ? "SOL" : "SAĞ";
+  if (yasal.length === 0) return { d: b.dir, tip: "uyari", metin: `⚠️ [TERRA ${kim}] ÇIKIŞ YOK` };
+  yasal = kafaNobeti(benIdx, yasal);
+  if (yasal.length === 1) return { d: yasal[0], tip: "uyari", metin: `⚠️ [TERRA ${kim}] KAÇIŞ: tek yön ${YONAD[yasal[0]]}` };
+
+  const v = bolgeBenim(benIdx, null, null);
+  const toplam = Math.max(1, v.ben + v.rakip + v.sinir);
+  const payBen = Math.round(v.ben * 100 / toplam);
+  const sonBolge = v.bos < 130;
+  let mod;
+  if (sonBolge) mod = "duvar"; else if (v.ben >= v.rakip) mod = "saldiri"; else mod = "genis";
+
+  let enIyi = yasal[0], enIyiSkor = -1e9, enIyiV = null;
+  for (const d of yasal) {
+    const nx = b.x + YON[d].x, ny = b.y + YON[d].y;
+    const v2 = bolgeBenim(benIdx, nx, ny);
+    let s = (v2.ben - v2.rakip) * 0.6;
+    if (mod === "duvar") {
+      let dolu = 0;
+      for (const w of YONLER) { const qx = nx + YON[w].x, qy = ny + YON[w].y; if (qx < 0 || qy < 0 || qx >= COLS || qy >= ROWS || grid[qy][qx] !== 0) dolu++; }
+      s += dolu * 0.9;
+    }
+    if (mod === "saldiri") { s -= (Math.abs(rakip.x - nx) + Math.abs(rakip.y - ny)) * 0.25; s -= v2.rakip * 0.1; }
+    if (mod === "genis") s += v2.ben * 0.05;
+    s += rastgele() * 0.3;
+    if (s > enIyiSkor) { enIyiSkor = s; enIyi = d; enIyiV = v2; }
+  }
+  let metin;
+  if (mod === "duvar") metin = `🧱 [TERRA ${kim}] SON DÜZLÜK: alan daraldı (${v.bos} boş) — duvar sarıyorum`;
+  else if (mod === "saldiri") metin = `⚔️ [TERRA ${kim}] SALDIRI: payım %${payBen} — erişimini daraltıyorum (ben ${enIyiV.ben} / rakip ${enIyiV.rakip})`;
+  else metin = `🌱 [TERRA ${kim}] GENİŞLEME: bölge rakipte (%${payBen}) — nefes alanımı büyütüyorum`;
+  return { d: enIyi, tip: "bot", metin };
+}
+
+// ---------- GENERAL ----------
+function genelFlood(g, k1, k2) {
+  const sahip = g.map(r => r.slice());
+  let katman = [];
+  for (const [k, kim] of [[k1, 1], [k2, 2]]) {
+    for (const d of YONLER) {
+      const nx = k.x + YON[d].x, ny = k.y + YON[d].y;
+      if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && g[ny][nx] === 0 && sahip[ny][nx] === 0) {
+        sahip[ny][nx] = kim; katman.push({x: nx, y: ny, kim});
+      }
+    }
+  }
+  while (katman.length) {
+    const yeni = [];
+    for (const c of katman) {
+      for (const d of YONLER) {
+        const nx = c.x + YON[d].x, ny = c.y + YON[d].y;
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || g[ny][nx] !== 0) continue;
+        const s = sahip[ny][nx];
+        if (s === 0) { sahip[ny][nx] = c.kim; yeni.push({x: nx, y: ny, kim: c.kim}); }
+      }
+    }
+    katman = yeni;
+  }
+  let a1 = 0, a2 = 0;
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+    if (sahip[y][x] === 1) a1++; else if (sahip[y][x] === 2) a2++;
+  }
+  return a1 - a2;
+}
+function genelAra(g, bx, by, rx, ry, derinlik, alfa, beta, rakipSirada) {
+  if (derinlik === 0) return genelFlood(g, {x: bx, y: by}, {x: rx, y: ry});
+  if (!rakipSirada) {
+    let enIyi = -Infinity;
+    for (const d of YONLER) {
+      const nx = bx + YON[d].x, ny = by + YON[d].y;
+      if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || g[ny][nx] !== 0) continue;
+      g[ny][nx] = 9;
+      const s = genelAra(g, nx, ny, rx, ry, derinlik - 1, alfa, beta, true);
+      g[ny][nx] = 0;
+      if (s > enIyi) enIyi = s;
+      if (enIyi > alfa) alfa = enIyi;
+      if (beta <= alfa) break;
+    }
+    return enIyi === -Infinity ? -10000 - derinlik : enIyi;
+  }
+  let enIyi = Infinity;
+  for (const d of YONLER) {
+    const nx = rx + YON[d].x, ny = ry + YON[d].y;
+    if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS || g[ny][nx] !== 0) continue;
+    g[ny][nx] = 9;
+    const s = genelAra(g, bx, by, nx, ny, derinlik - 1, alfa, beta, false);
+    g[ny][nx] = 0;
+    if (s < enIyi) enIyi = s;
+    if (enIyi < beta) beta = enIyi;
+    if (beta <= alfa) break;
+  }
+  return enIyi === Infinity ? 10000 + derinlik : enIyi;
+}
+function generalKarar(benIdx) {
+  const ben = oyuncular[benIdx], rakip = oyuncular[1 - benIdx];
+  const kim = benIdx === 0 ? "SOL" : "SAĞ";
+  const yasal = yasalAdaylar(ben);
+  if (yasal.length === 0) return { d: ben.dir, tip: "uyari", metin: `⚠️ [GENERAL ${kim}] ÇIKIŞ YOK` };
+  const g = grid.map(r => r.slice());
+  let enIyi = yasal[0], enIyiSkor = -Infinity;
+  for (const d of yasal) {
+    const nx = ben.x + YON[d].x, ny = ben.y + YON[d].y;
+    g[ny][nx] = 9;
+    const s = genelAra(g, nx, ny, rakip.x, rakip.y, 3, -Infinity, Infinity, true);
+    g[ny][nx] = 0;
+    if (s > enIyiSkor || (s === enIyiSkor && rastgele() < 0.5)) { enIyiSkor = s; enIyi = d; }
+  }
+  const ruh = enIyiSkor <= -10000 ? " — bu yolda tuzak var ama seçenek az"
+            : enIyiSkor >= 10000 ? " — rakibi tuzağa düşürüyorum"
+            : enIyiSkor >= 0 ? " — en kötü senaryoda bile bölge avantajı bende"
+            : " — kaybı en aza indiren yol";
+  return { d: enIyi, tip: "bot", metin: `♟️ [GENERAL ${kim}] 4 hamle hesapladım — ${YONAD[enIyi]}${ruh}` };
+}
+
+// ---------- MONTİ ----------
+function montiOynatma(g, bx, by, rx, ry) {
+  let benYasiyor = true, rakipYasiyor = true, adim = 0;
+  while (benYasiyor && rakipYasiyor && adim++ < 80) {
+    const bAday = [];
+    for (const d of YONLER) {
+      const nx = bx + YON[d].x, ny = by + YON[d].y;
+      if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && g[ny][nx] === 0) {
+        let acik = 0;
+        for (const w of YONLER) { const qx = nx + YON[w].x, qy = ny + YON[w].y; if (qx >= 0 && qy >= 0 && qx < COLS && qy < ROWS && g[qy][qx] === 0) acik++; }
+        bAday.push({d, nx, ny, agirlik: acik + 1});
+      }
+    }
+    let bHam = null;
+    if (bAday.length) {
+      let top = 0; for (const a of bAday) top += a.agirlik;
+      let cark = rastgele() * top;
+      for (const a of bAday) { cark -= a.agirlik; if (cark <= 0) { bHam = a; break; } }
+      if (!bHam) bHam = bAday[bAday.length - 1];
+    }
+    const rAday = [];
+    for (const d of YONLER) {
+      const nx = rx + YON[d].x, ny = ry + YON[d].y;
+      if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && g[ny][nx] === 0) rAday.push({d, nx, ny});
+    }
+    const rHam = rAday.length ? rAday[Math.floor(rastgele() * rAday.length)] : null;
+    if (bHam && rHam && bHam.nx === rHam.nx && bHam.ny === rHam.ny) return 0.5;
+    if (bHam) { g[bHam.ny][bHam.nx] = 9; bx = bHam.nx; by = bHam.ny; } else benYasiyor = false;
+    if (rHam) { g[rHam.ny][rHam.nx] = 9; rx = rHam.nx; ry = rHam.ny; } else rakipYasiyor = false;
+  }
+  if (!benYasiyor && !rakipYasiyor) return 0.5;
+  return rakipYasiyor ? 0 : 1;
+}
+function montiKarar(benIdx) {
+  const ben = oyuncular[benIdx], rakip = oyuncular[1 - benIdx];
+  const kim = benIdx === 0 ? "SOL" : "SAĞ";
+  let yasal = yasalAdaylar(ben);
+  if (yasal.length === 0) return { d: ben.dir, tip: "uyari", metin: `⚠️ [MONTİ ${kim}] ÇIKIŞ YOK` };
+  yasal = kafaNobeti(benIdx, yasal);
+  const OYUN = 16;
+  let enIyi = yasal[0], enIyiOran = -1, toplamOyun = 0;
+  for (const d of yasal) {
+    let kazan = 0, n = 0;
+    for (let r = 0; r < OYUN; r++) {
+      const g = grid.map(row => row.slice());
+      const nx = ben.x + YON[d].x, ny = ben.y + YON[d].y;
+      g[ny][nx] = 9;
+      kazan += montiOynatma(g, nx, ny, rakip.x, rakip.y); n++;
+    }
+    toplamOyun += n;
+    const oran = kazan / n;
+    if (oran > enIyiOran) { enIyiOran = oran; enIyi = d; }
+  }
+  return { d: enIyi, tip: "bot", metin: `🎲 [MONTİ ${kim}] ${toplamOyun} sanal maç — ${YONAD[enIyi]} (%${Math.round(enIyiOran * 100)} kazanma)` };
+}
+
+// ---------- DUVARCI ----------
+function duvarciKarar(benIdx) {
+  const ben = oyuncular[benIdx];
+  const kim = benIdx === 0 ? "SOL" : "SAĞ";
+  let yasal = yasalAdaylar(ben);
+  if (yasal.length === 0) return { d: ben.dir, tip: "uyari", metin: `⚠️ [DUVARCI ${kim}] ÇIKIŞ YOK` };
+  yasal = kafaNobeti(benIdx, yasal);
+  const bos = (() => { let n = 0; for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (grid[y][x] === 0) n++; return n; })();
+  const yapiskan = bos < 130 ? 3.0 : 1.2;
+  let enIyi = yasal[0], enIyiSkor = -1e9, enIyiAlan = 0, enIyiDolu = 0;
+  for (const d of yasal) {
+    const nx = ben.x + YON[d].x, ny = ben.y + YON[d].y;
+    const alan = ulasilanAlan(grid, nx, ny);
+    let dolu = 0;
+    for (const w of YONLER) { const qx = nx + YON[w].x, qy = ny + YON[w].y; if (qx < 0 || qy < 0 || qx >= COLS || qy >= ROWS || grid[qy][qx] !== 0) dolu++; }
+    const s = alan + dolu * yapiskan + rastgele() * 0.4;
+    if (s > enIyiSkor) { enIyiSkor = s; enIyi = d; enIyiAlan = alan; enIyiDolu = dolu; }
+  }
+  return { d: enIyi, tip: "bot", metin: `🧱 [DUVARCI ${kim}] uzay doldurma — ${YONAD[enIyi]} (ulaşılan ${enIyiAlan}, ${enIyiDolu} komşu iz)${yapiskan > 2 ? " · son düzlük" : ""}` };
+}
+
+// ---------- AVCI (KURAL KATMANLI — analistler buraya kural ekler) ----------
+function kosulTek(ks, durum) {
+  const d = durum[ks.alan];
+  switch (ks.op) {
+    case "<": return d < ks.deger;
+    case "<=": return d <= ks.deger;
+    case ">": return d > ks.deger;
+    case ">=": return d >= ks.deger;
+    case "==": return d === ks.deger;
+    default: return false;
+  }
+}
+function kosulSagla(ks, durum) {
+  if (!ks || !kosulTek(ks, durum)) return false;
+  if (ks.ve && !kosulTek(ks.ve, durum)) return false;
+  return true;
+}
+function kosulMetni(ks) {
+  const a = ALAN_TR[ks.alan] || ks.alan;
+  let m = `${a} ${ks.op} ${ks.deger}`;
+  if (ks.ve) m += ` VE ${ALAN_TR[ks.ve.alan] || ks.ve.alan} ${ks.ve.op} ${ks.ve.deger}`;
+  return m;
+}
+function etkiMetni(et) {
+  const parcalar = [];
+  if (et.modDegistir) parcalar.push(MOD_TR[et.modDegistir] || et.modDegistir);
+  if (et.katsayi && et.katsayi.mesafe != null) parcalar.push(`mesafe katsayısı ${et.katsayi.mesafe}`);
+  if (et.katsayi && et.katsayi.bolge != null) parcalar.push(`bölge katsayısı ${et.katsayi.bolge}`);
+  return parcalar.length ? parcalar.join(" + ") : "skor değişmez";
+}
+function avciKarar(benIdx) {
+  const ben = oyuncular[benIdx], rakip = oyuncular[1 - benIdx];
+  const kim = benIdx === 0 ? "SOL" : "SAĞ";
+  let yasal = yasalAdaylar(ben);
+  if (yasal.length === 0) return { d: ben.dir, tip: "uyari", metin: `⚠️ [AVCI ${kim}] ÇIKIŞ YOK` };
+  yasal = kafaNobeti(benIdx, yasal);
+  if (yasal.length === 1) return { d: yasal[0], tip: "uyari", metin: `⚠️ [AVCI ${kim}] KAÇIŞ: tek yön ${YONAD[yasal[0]]}` };
+
+  const v = bolgeBenim(benIdx, null, null);
+  const toplam = Math.max(1, v.ben + v.rakip + v.sinir);
+  const durum = {
+    bolgePayim: Math.round(v.ben * 100 / toplam),
+    rakipMesafe: Math.abs(rakip.x - ben.x) + Math.abs(rakip.y - ben.y),
+    onAciklik: aciklikOlc(ben.x, ben.y, ben.dir),
+    sonDuzluk: v.bos < 130 ? 1 : 0,
+    kafaRiski: (Math.abs(rakip.x - ben.x) + Math.abs(rakip.y - ben.y)) <= 1 ? 1 : 0,
+    olumTehlikesi: (aciklikOlc(ben.x, ben.y, ben.dir) <= 1 && aciklikOlc(ben.x, ben.y, SOL[ben.dir]) <= 1 && aciklikOlc(ben.x, ben.y, SAG[ben.dir]) <= 1) ? 1 : 0,
+  };
+
+  // kural katmanı: İLK eşleşen kural bu hamleyi yönetir
+  let katsayi = { mesafe: 1.2, bolge: 0.3 }, mod = null, tetik = null;
+  for (const k of (ben.kurallar || [])) {
+    if (k.durum !== "aktif") continue;
+    if (kosulSagla(k.kosul, durum)) {
+      const et = k.etki || {};
+      if (et.katsayi) katsayi = { mesafe: et.katsayi.mesafe ?? katsayi.mesafe, bolge: et.katsayi.bolge ?? katsayi.bolge };
+      if (et.modDegistir) mod = et.modDegistir;
+      tetik = k;
+      break;
+    }
+  }
+  const on = tetik ? `[${tetik.id}] ` : "";
+
+  // rota tahmini hedefi
+  let hx = rakip.x + YON[rakip.dir].x * 3, hy = rakip.y + YON[rakip.dir].y * 3;
+  if (hx < 0 || hy < 0 || hx >= COLS || hy >= ROWS || grid[hy][hx] !== 0) {
+    hx = rakip.x + YON[rakip.dir].x * 2; hy = rakip.y + YON[rakip.dir].y * 2;
+  }
+  hx = Math.max(0, Math.min(COLS - 1, hx)); hy = Math.max(0, Math.min(ROWS - 1, hy));
+
+  let enIyi = yasal[0], enIyiSkor = -1e9, enIyiDist = 0;
+  for (const d of yasal) {
+    const nx = ben.x + YON[d].x, ny = ben.y + YON[d].y;
+    let s;
+    if (mod === "kacis") {
+      s = aciklikOlc(nx, ny, d) * 1.0;
+    } else {
+      const v2 = bolgeBenim(benIdx, nx, ny);
+      const dist = Math.abs(hx - nx) + Math.abs(hy - ny);
+      s = -dist * (mod === "av" ? katsayi.mesafe * 2 : katsayi.mesafe) + (v2.ben - v2.rakip) * katsayi.bolge;
+      enIyiDist = Math.abs(rakip.x - nx) + Math.abs(rakip.y - ny);
+    }
+    s += rastgele() * 0.3;
+    if (s > enIyiSkor) { enIyiSkor = s; enIyi = d; }
+  }
+
+  let metin;
+  if (mod === "kacis")
+    metin = `🛡️ [AVCI ${kim}${on ? "|" + tetik.id : ""}] KURAL İŞLEDİ → kaçış — ${YONAD[enIyi]} (koşul: ${tetik ? kosulMetni(tetik.kosul) : ""})`;
+  else if (tetik)
+    metin = `🗡️ [AVCI ${kim}|${tetik.id}] kovalama — ${YONAD[enIyi]} (katsayilarım: mesafe ${katsayi.mesafe}, bölge ${katsayi.bolge}) · rakibe ${enIyiDist} hücre`;
+  else
+    metin = `🗡️ [AVCI ${kim}] kovalama — ${YONAD[enIyi]} (kafasına ${enIyiDist} hücre)`;
+  return { d: enIyi, tip: "bot", metin, tetik: tetik ? tetik.id : null, mod };
+}
+
+// ---------- dispatch ----------
+function beyinKarar(benIdx) {
+  switch (oyuncular[benIdx].beyin) {
+    case "terra": return terraKarar(benIdx);
+    case "general": return generalKarar(benIdx);
+    case "monti": return montiKarar(benIdx);
+    case "duvarci": return duvarciKarar(benIdx);
+    case "avci": return avciKarar(benIdx);
+    case "ai": return avciKarar(benIdx);   // === AI GİRİŞ NOKTASI ===
+    default: return terraKarar(benIdx);
+  }
+}
+
+// ---------- insan niyet analizi (yalnız SOL=İNSAN) ----------
+const insanNiyetler = [];
+let insanDonus = 0, insanRakibe = 0;
+function insanAnaliz(p, eski, yeni) {
+  const onAcik = aciklikOlc(p.x, p.y, eski);
+  const yeniAcik = aciklikOlc(p.x, p.y, yeni);
+  const rakip = oyuncular[1];
+  const mesafe = Math.abs(rakip.x - p.x) + Math.abs(rakip.y - p.y);
+  let kesme = false;
+  const bv = YON[rakip.dir];
+  for (let k = 2; k <= 5; k++) {
+    const tx = rakip.x + bv.x * k, ty = rakip.y + bv.y * k;
+    if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) break;
+    if (Math.abs(tx - (p.x + YON[yeni].x)) + Math.abs(ty - (p.y + YON[yeni].y)) <= 2 && mesafe <= 12) { kesme = true; break; }
+  }
+  const v = bolgeBenim(0, null, null);
+  const toplam = Math.max(1, v.ben + v.rakip + v.sinir);
+  const payInsan = Math.round(v.ben * 100 / toplam);
+  let etiket, neden;
+  if (onAcik <= 2) { etiket = "🏃 KAÇIŞ"; neden = onAcik === 0 ? "önüm tamamen kapandı" : `önüm ${onAcik} hücre sonra kapanıyordu`; }
+  else if (kesme) { etiket = "✂️ KESME"; neden = `rakibin önündeki rotaya yaklaşıyorsun (mesafe ${mesafe})`; }
+  else if (yeniAcik >= 6 && yeniAcik > onAcik) { etiket = "🚀 AÇIK ALAN"; neden = `yeni yönde ${yeniAcik} hücre açık`; }
+  else if (payInsan >= 55) { etiket = "🗺️ ALAN KAPMA"; neden = `bölgen geniş (%${payInsan})`; }
+  else { etiket = "🧱 IZ TAKİBİ"; neden = "iz/duvar dibinde ilerliyorsun"; }
+  insanDonus++;
+  if ((rakip.x - p.x) * YON[yeni].x + (rakip.y - p.y) * YON[yeni].y > 0) insanRakibe++;
+  insanNiyetler.push(etiket.replace(/^\S+\s/, ""));
+  if (insanNiyetler.length > 12) insanNiyetler.shift();
+  solStatEl.innerHTML = `rakibe mesafe: <b>${mesafe}</b> · alan payın: <b>%${payInsan}</b> · ` +
+    `rakibe yönelme: <b>%${insanDonus ? Math.round(insanRakibe * 100 / insanDonus) : 0}</b> (${insanDonus} dönüş)`;
+  return `${etiket} — ${neden} · ${YONAD[yeni]} (açık: ${yeniAcik}, rakip: ${mesafe} hücre)`;
+}
+
+// ---------- lig tablosu ----------
+const TABLO_AD = { insan:"İNSAN", terra:"TERRA", general:"GENERAL", monti:"MONTİ", duvarci:"DUVARCI", avci:"AVCI", ai:"AI" };
+let puan = {};
+let macNo = 0;
+function puanKayit(a, b, sonuc) {
+  for (const k of [a, b]) if (!puan[k]) puan[k] = { g: 0, b: 0, m: 0 };
+  if (sonuc === "a") { puan[a].g++; puan[b].m++; }
+  else if (sonuc === "b") { puan[b].g++; puan[a].m++; }
+  else { puan[a].b++; puan[b].b++; }
+  tabloCiz();
+}
+function tabloCiz() {
+  const satirlar = Object.entries(puan).filter(([, v]) => v.g + v.b + v.m > 0)
+    .sort((x, y) => (y[1].g - x[1].g) || (y[1].g / (y[1].g + y[1].m + 0.001) - x[1].g / (x[1].g + x[1].m + 0.001)));
+  let html = `<div class="tbaslik">🏆 LİG DURUMU — bu oturum, ${macNo} maç · G galibiyet · B berabere · M mağlubiyet</div>`;
+  if (satirlar.length) {
+    html += "<table><tr><th>beyin</th><th class='sayi'>G</th><th class='sayi'>B</th><th class='sayi'>M</th></tr>";
+    satirlar.forEach(([k, v], i) => {
+      html += `<tr class="${i === 0 ? 'ust' : ''}"><td>${TABLO_AD[k] || k}</td><td class="sayi">${v.g}</td><td class="sayi">${v.b}</td><td class="sayi">${v.m}</td></tr>`;
+    });
+    html += "</table>";
+  } else html += "<table><tr><td>henüz maç bitmedi</td></tr></table>";
+  document.getElementById("tablo").innerHTML = html;
+}
+
+// ---------- maç kurulumu ----------
+function startMac() {
+  grid = Array.from({length: ROWS}, () => new Array(COLS).fill(0));
+  oyuncular = [
+    { taraf: "sol", x: 5,  y: 15, dir: "R", canli: true, renk: RENK.insan, beyin: solBeyin, kurallar: avciKurallar.sol || [] },
+    { taraf: "sag", x: 39, y: 15, dir: "L", canli: true, renk: RENK.bot,   beyin: sagBeyin, kurallar: avciKurallar.sag || [] },
+  ];
+  oyuncular.forEach(p => grid[p.y][p.x] = p.taraf === "sol" ? 1 : 2);
+  // önceki maçtan taşan bayat yön + worker kuyruğu, yeni maçın ilk tikerlerinde botu duvara sürüyordu — her maç açılış yönleriyle temiz başlasın
+  sonAIYon.sol = "R"; sonAIYon.sag = "L";
+  ajanBekleyen.sol = 0; ajanBekleyen.sag = 0;
+  if (window.__hepsiniDurdur) {
+    window.__hepsiniDurdur = false;   // BAŞLAT = durdurmayı kaldır, mevcut sürümlerle devam
+    apiPost("/api/ajan_durdur", { taraf: "sol", durdur: false }).catch(() => {});
+    apiPost("/api/ajan_durdur", { taraf: "sag", durdur: false }).catch(() => {});
+    ikisineYaz("▶ durdurma kaldırıldı — mevcut sürümlerle devam ediliyor");
+  }
+  ajanBaslat("sol"); ajanBaslat("sag");
+  kanal.sol = { tik: 0, sonYazim: 0, sonYon: null, kim: `🤖 SOL ${BEYIN_KIM[solBeyin]}` };
+  kanal.sag = { tik: 0, sonYazim: 0, sonYon: null, kim: `🤖 SAĞ ${BEYIN_KIM[sagBeyin]}` };
+  insanNiyetler.length = 0; insanDonus = 0; insanRakibe = 0;
+  solStatEl.innerHTML = "istatistik: maç akıyor…";
+  // telemetri: an-ve-an iz (her tik: pozisyonlar + işleyen kural) + bölge örnekleri + olaylar
+  macKayit = { bolgeSol: [], bolgeSag: [], olum: null, kacis: { sol: 0, sag: 0 }, iz: [] };
+
+  document.getElementById("lblSol").textContent = BEYIN_KIM[solBeyin];
+  document.getElementById("lblSag").textContent = BEYIN_KIM[sagBeyin];
+  document.getElementById("solT1").textContent = BEYIN_AD[solBeyin];
+  document.getElementById("sagT1").textContent = BEYIN_AD[sagBeyin];
+  rozetGuncelle("sol"); rozetGuncelle("sag");
+  document.getElementById("solT2").textContent = solBeyin === "insan"
+    ? "her tuşta: karar + niyet etiketi — tahmindir"
+    : "ajan: kendi JS kodunu (yonBul) yazar ve her IMPROVE'da geliştirir (GLM-5.3-Flash, sınırsız)";
+  document.getElementById("sagT2").textContent = sagBeyin === "ai"
+    ? "ajan: kendi JS kodunu (yonBul) yazar ve her IMPROVE'da geliştirir (GLM-5.3-Flash, sınırsız)"
+    : "kural tabanlı statik beyin";
+
+  const modMetni = (solBeyin === "insan") ? `insan vs ${BEYIN_KIM[sagBeyin]}`
+                 : `${BEYIN_KIM[solBeyin]} vs ${BEYIN_KIM[sagBeyin]} 🤖🤖`;
+  macNo++;
+  ikisineYaz(`— maç #${macNo}: ${modMetni} —`);
+
+  overlay.style.display = "none";
+  bekleme = false;
+  if (solBeyin === "insan") { running = false; ciz(); mesajGoster("HAZIR", "Başlamak için bir OK TUŞUNA bas"); }
+  else { running = true; ciz(); }
+}
+
+function mesajGoster(baslik, alt, renk) {
+  document.getElementById("oBaslik").textContent = baslik;
+  document.getElementById("oBaslik").style.color = renk || "#cfd8dc";
+  document.getElementById("oBaslik").style.textShadow = renk ? `0 0 22px ${renk}` : "none";
+  document.getElementById("oAlt").textContent = alt;
+  overlay.style.display = "flex";
+}
+
+// ---------- oyun adımı ----------
+let ortakTik = 0, sonOkumaTik = 0;
+function adim() {
+  try { adimIc(); }
+  catch (e) {
+    bekleme = true; running = false;
+    ikisineYaz(`💥 BEYİN HATASI: ${e.message}`);
+    mesajGoster("💥 BEYİN HATASI", `${e.message} — BAŞLAT ile yeni maç`, "#ff5252");
+  }
+}
+function adimIc() {
+  if (bekleme) return;
+  ortakTik++;
+
+  const kararlar = [null, null];
+  for (const idx of [0, 1]) {
+    const p = oyuncular[idx];
+    if (p.beyin === "insan") continue;
+    const taraf = idx === 0 ? "sol" : "sag";
+    let karar;
+    if (p.beyin === "ai") {
+      // ajan kodu Worker'da çalışıyor; motor onun son döndürdüğü yönü uygular
+      p.dir = sonAIYon[taraf];
+      kararlar[idx] = { d: p.dir, tip: "bot", metin: `🧠 [${taraf.toUpperCase()}] ajan ` + ajanSurumYazi(taraf) + " → " + YONAD[p.dir] };
+      botGunlugu(taraf, kararlar[idx]);
+      continue;
+    }
+    karar = beyinKarar(idx);
+    kararlar[idx] = karar;
+    if (karar.tip === "uyari" && p.beyin === "avci") macKayit.kacis[taraf]++;
+    botGunlugu(taraf, karar);
+    p.dir = karar.d;
+  }
+
+  // AN VE AN iz kaydı: iki oyuncunun tahtadaki yeri + o tikte işleyen kural
+  if (macKayit.iz.length < 4000) {
+    macKayit.iz.push({
+      t: ortakTik,
+      s: [oyuncular[0].x, oyuncular[0].y, oyuncular[0].dir], r0: kararlar[0]?.tetik || null,
+      g: [oyuncular[1].x, oyuncular[1].y, oyuncular[1].dir], r1: kararlar[1]?.tetik || null,
+    });
+  }
+
+  if (oyuncular[0].beyin === "insan" && insanNiyetler.length >= 3 && ortakTik - sonOkumaTik >= 45) {
+    sonOkumaTik = ortakTik;
+    const say = {};
+    insanNiyetler.forEach(e => say[e] = (say[e] || 0) + 1);
+    const ozet = Object.entries(say).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k.toLowerCase()}×${n}`).join(" · ");
+    solYaz("sistem", "", `🧍 taktik okuması (son ${insanNiyetler.length} dönüşün): ${ozet}`);
+  }
+
+  // telemetri: 20 tikte bir bölge örneklemesi + canlı alan barı + 60 tikte chat duyurusu
+  if (ortakTik % 20 === 0) {
+    const v = bolgeBenim(0, null, null);
+    const toplam = Math.max(1, v.ben + v.rakip + v.sinir);
+    const pSol = Math.round(v.ben * 100 / toplam);
+    macKayit.bolgeSol.push(pSol);
+    macKayit.bolgeSag.push(100 - pSol);
+    const bolum1 = document.getElementById("alanSolBolum");
+    const bolum2 = document.getElementById("alanSagBolum");
+    if (bolum1) bolum1.style.width = pSol + "%";
+    if (bolum2) bolum2.style.width = (100 - pSol) + "%";
+    const hukum = pSol === (100 - pSol) ? "denge" : (pSol > 50 ? "SOL önde" : "SAĞ önde");
+    const yazi = document.getElementById("alanYazi");
+    if (yazi) yazi.textContent = "SOL %" + pSol + " — SAĞ %" + (100 - pSol) + " · " + hukum;
+    if ((ortakTik / 20) % 3 === 1) {
+      ikisineYaz("🌍 ALAN HÜKMÜ: SOL %" + pSol + " — SAĞ %" + (100 - pSol) + " · " + hukum);
+    }
+  }
+
+  const hedefler = oyuncular.map(p => ({ p, nx: p.x + YON[p.dir].x, ny: p.y + YON[p.dir].y }));
+  const oldu = hedefler.map(h => h.nx < 0 || h.ny < 0 || h.nx >= COLS || h.ny >= ROWS || grid[h.ny][h.nx] !== 0);
+  if (hedefler[0].nx === hedefler[1].nx && hedefler[0].ny === hedefler[1].ny) { oldu[0] = oldu[1] = true; }
+  hedefler.forEach((h, i) => {
+    if (!oldu[i]) { h.p.x = h.nx; h.p.y = h.ny; grid[h.ny][h.nx] = i === 0 ? 1 : 2; }
+    else if (!macKayit.olum) macKayit.olum = { taraf: i === 0 ? "sol" : "sag", tik: ortakTik, x: h.nx, y: h.ny };
+  });
+
+  ciz();
+
+  // ajanlara güncel durum gönder (Worker kendi koduyla yönü hesaplar, sandbox içinde)
+  if (oyuncular.some(p => p.beyin === "ai")) {
+    const izSatirlari = grid.map(r => r.map(k => k === 0 ? "." : k === 1 ? "B" : "R").join(""));
+    for (const idx of [0, 1]) {
+      const p = oyuncular[idx];
+      if (p.beyin !== "ai" || !ajanWorker[p.taraf]) continue;
+      const rk = oyuncular[1 - idx];
+      try {
+        ajanBekleyen[p.taraf] = (ajanBekleyen[p.taraf] || 0) + 1;
+        ajanWorker[p.taraf].postMessage({ tip: "durum", durum: {
+          ben: { x: p.x, y: p.y, yon: p.dir },
+          rakip: { x: rk.x, y: rk.y, yon: rk.dir },
+          iz: izSatirlari, tik: ortakTik } });
+      } catch (e) {}
+    }
+  }
+
+  if (oldu[0] || oldu[1]) {
+    bekleme = true;
+    izGonder();
+    // maç parmak izi: hamle dizileri (tekrar tespiti için)
+    window.__oyunIzleri = window.__oyunIzleri || [];
+    window.__oyunIzleri.push({
+      macNo,
+      solHam: macKayit.iz.map(t => t.s[2]).join(""),
+      sagHam: macKayit.iz.map(t => t.g[2]).join(""),
+    });
+    const kaybedenTaraf = (oldu[0] && oldu[1]) ? null : (oldu[0] ? "sol" : "sag");   // ölen = kaybeden
+    // YAYIN ALTYAZI: kazanan/kaybeden duyurusu
+    const kazananRenk = kaybedenTaraf === "sol" ? "#ff9100" : "#00e5ff";
+    const kazananAd = kaybedenTaraf === "sol" ? "SOL" : "SAG";
+    if (kaybedenTaraf) {
+      altyaziGoster('\u1F3C6 <span class="renk" style="color:' + kazananRenk + '">' + kazananAd + ' KAZANDI</span> — kaybeden ajan IMPROVE ile kendini gelistirecek', 8);
+    } else {
+      altyaziGoster('\u1F480 <span class="renk" style="color:#ff5252">BERABERE</span> — iki ajan da ayni anda oldü', 8);
+    }
+    if (kaybedenTaraf && oyuncular[kaybedenTaraf === "sol" ? 0 : 1].beyin === "ai") {
+      if (otomatikImproveAcik && !window.__hepsiniDurdur) {
+        (kaybedenTaraf === "sol" ? solYaz : sagYaz)("sistem", "", "☠ kaybeden ajan — IMPROVE 2 sn içinde OTOMATİK başlıyor (kazanan kod değiştirmiyor)");
+        setTimeout(() => { if (otomatikImproveAcik && !window.__hepsiniDurdur) improveTuru(kaybedenTaraf); }, 2000);
+      } else {
+        (kaybedenTaraf === "sol" ? solYaz : sagYaz)("sistem", "", "☠ kaybeden ajan — otomatik IMPROVE " + (window.__hepsiniDurdur ? "DURDURULDU" : "KAPALI") + " · ajan merkezle konuşmuyor");
+      }
+    }
+    if (oldu[0] && oldu[1]) {
+      mesajGoster("🤝 BERABERE", `Kafa kafaya! · seri: SOL ${skor.sol} — ${skor.sag} SAĞ · BAŞLAT: tekrar`, "#9aa7b0");
+      ikisineYaz(`— maç #${macNo} bitti: BERABERE (ikisi de uçtu) — IMPROVE ile analistleri çalıştır —`);
+      puanKayit(solBeyin, sagBeyin, "x");
+      raporGonder("sol", 0.5); raporGonder("sag", 0.5);
+    } else if (oldu[0]) {
+      skor.sag++;
+      mesajGoster(`🏆 ${BEYIN_KIM[sagBeyin]} KAZANDI`, `seri: SOL ${skor.sol} — ${skor.sag} SAĞ · BAŞLAT: rövanş`, RENK.bot);
+      ikisineYaz(`— maç #${macNo} bitti: SAĞ (${BEYIN_KIM[sagBeyin]}) kazandı · IMPROVE ile analistleri çalıştır —`);
+      puanKayit(solBeyin, sagBeyin, "b");
+      raporGonder("sol", 0); raporGonder("sag", 1);
+    } else {
+      skor.sol++;
+      mesajGoster(`🏆 ${BEYIN_KIM[solBeyin]} KAZANDI`, `seri: SOL ${skor.sol} — ${skor.sag} SAĞ · BAŞLAT: rövanş`, RENK.insan);
+      ikisineYaz(`— maç #${macNo} bitti: SOL (${BEYIN_KIM[solBeyin]}) kazandı · IMPROVE ile analistleri çalıştır —`);
+      puanKayit(solBeyin, sagBeyin, "a");
+      raporGonder("sol", 1); raporGonder("sag", 0);
+    }
+    skorYaz();
+  }
+}
+
+// ---------- telemetri gönderimi ----------
+function izGonder() {
+  // an-ve-an iz: maçın tamamı (pozisyonlar + işleyen kurallar) → sunucuda pakete dönüşür
+  apiPost("/api/mac_iz", {
+    macNo,
+    iz: { ticks: macKayit.iz, olum: macKayit.olum, kacis: macKayit.kacis, bolgeSol: macKayit.bolgeSol, bolgeSag: macKayit.bolgeSag },
+  }).catch(() => {});
+}
+function raporGonder(taraf, sonuc) {
+  const idx = taraf === "sol" ? 0 : 1;
+  if (oyuncular[idx].beyin !== "avci" && oyuncular[idx].beyin !== "ai") return;
+  const aktifKurallar = (oyuncular[idx].kurallar || []).map(k => k.id).join(",") || "yok";
+  const rapor = {
+    macNo, taraf, surum: playbookOzet[taraf] ? playbookOzet[taraf].surum : "?",
+    aktifKurallar, sonuc: sonuc === 0.5 ? "berabere" : (sonuc === 1 ? "kazandi" : "kaybetti"),
+    tik: ortakTik, olum: macKayit.olum, kacisSayisi: macKayit.kacis[taraf],
+    bolgeEgrisi: taraf === "sol" ? macKayit.bolgeSol : macKayit.bolgeSag,
+    rakip: oyuncular[1 - idx].beyin, tarih: new Date().toISOString(),
+  };
+  apiPost("/api/mac_raporu", { taraf, rapor }).catch(() => {});
+}
+
+// ---------- tohumlanabilir RNG + sanal maç (HAKEM) ----------
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function sanalMac(avciKuralListesi, seed) {
+  // AVCI (kurallı) vs TERRA — motor fiziğinin kopyası, UI'sız; global durum geçici değişir
+  const kGrid = grid, kOy = oyuncular, kRas = rastgele;
+  grid = Array.from({length: ROWS}, () => new Array(COLS).fill(0));
+  oyuncular = [
+    { taraf: "simA", x: 5,  y: 15, dir: "R", canli: true, renk: "#fff", beyin: "avci", kurallar: avciKuralListesi },
+    { taraf: "simB", x: 39, y: 15, dir: "L", canli: true, renk: "#fff", beyin: "terra", kurallar: [] },
+  ];
+  oyuncular.forEach((p, i) => grid[p.y][p.x] = i + 1);
+  rastgele = mulberry32(seed);
+  let sonuc = 0.5;
+  for (let t = 0; t < 700; t++) {
+    oyuncular[0].dir = beyinKarar(0).d;
+    oyuncular[1].dir = beyinKarar(1).d;
+    const h = oyuncular.map(p => ({ p, nx: p.x + YON[p.dir].x, ny: p.y + YON[p.dir].y }));
+    const oldu = h.map(x => x.nx < 0 || x.ny < 0 || x.nx >= COLS || x.ny >= ROWS || grid[x.ny][x.nx] !== 0);
+    if (h[0].nx === h[1].nx && h[0].ny === h[1].ny) { sonuc = 0.5; break; }
+    h.forEach((x, i) => { if (!oldu[i]) { x.p.x = x.nx; x.p.y = x.ny; grid[x.ny][x.nx] = i + 1; } else x.p.canli = false; });
+    if (oldu[0]) { sonuc = 0; break; }
+    if (oldu[1]) { sonuc = 1; break; }
+  }
+  grid = kGrid; oyuncular = kOy; rastgele = kRas;
+  return sonuc;
+}
+function hakemBataryasi(eskiKurallar, yeniKurallar) {
+  const tohumlar = [11, 22, 33, 44, 55];
+  let yeniSkor = 0, eskiSkor = 0;
+  const detay = [];
+  for (const s of tohumlar) {
+    const y = sanalMac(yeniKurallar, s);
+    const e = sanalMac(eskiKurallar, s);
+    yeniSkor += y; eskiSkor += e;
+    detay.push(`S${s}: yeni ${y} · eski ${e}`);
+  }
+  return { yeniSkor: Math.round(yeniSkor * 10) / 10, eskiSkor: Math.round(eskiSkor * 10) / 10, detay, kabul: yeniSkor >= eskiSkor };
+}
+
+function kaybedenBildir(taraf) {
+  (taraf === "sol" ? solYaz : sagYaz)("sistem", "", "☠ kaybettin — kazanan kod değiştirmiyor, sen IMPROVE ediliyorsun");
+}
+
+// ---------- AJAN SANAL MAÇ: iki ajan kodunu kafasız simüle et (kıyas için) ----------
+function ajanSanalMac(kodX, kodO, seed) {
+  const kGrid = grid, kOy = oyuncular, kRas = rastgele;
+  try {
+    grid = Array.from({length: ROWS}, () => new Array(COLS).fill(0));
+    oyuncular = [
+      { x: 5,  y: 15, dir: "R", canli: true, beyin: "simX" },
+      { x: 39, y: 15, dir: "L", canli: true, beyin: "simO" },
+    ];
+    oyuncular.forEach((p, i) => grid[p.y][p.x] = i + 1);
+    rastgele = mulberry32(seed);
+    let fx, fo;
+    try {
+      fx = new Function("durum", kodX + "\nreturn yonBul(durum);");
+      fo = new Function("durum", kodO + "\nreturn yonBul(durum);");
+    } catch (e) { grid = kGrid; oyuncular = kOy; rastgele = kRas; return 0; }
+    let sonuc = 0.5;
+    for (let t = 0; t < 900; t++) {
+      const ham = [];
+      for (const idx of [0, 1]) {
+        const p = oyuncular[idx], rk = oyuncular[1 - idx];
+        const iz = grid.map(r => r.map(k => k === 0 ? "." : k === idx + 1 ? "B" : "R").join(""));
+        const durumX = { ben: {x: p.x, y: p.y, yon: p.dir}, rakip: {x: rk.x, y: rk.y, yon: rk.dir}, iz, tik: t };
+        let yon = null;
+        try { yon = String((idx === 0 ? fx : fo)(durumX)).trim().toUpperCase(); } catch (e) { yon = null; }
+        ham.push((yon === "U" || yon === "D" || yon === "L" || yon === "R") ? yon : null);
+      }
+      if (!ham[0]) { sonuc = 0; break; }
+      if (!ham[1]) { sonuc = 1; break; }
+      const hx = oyuncular[0].x + YON[ham[0]].x, hy = oyuncular[0].y + YON[ham[0]].y;
+      const ox = oyuncular[1].x + YON[ham[1]].x, oy2 = oyuncular[1].y + YON[ham[1]].y;
+      if (hx === ox && hy === oy2) { sonuc = 0.5; break; }
+      const xOlu = hx < 0 || hy < 0 || hx >= COLS || hy >= ROWS || grid[hy][hx] !== 0;
+      const oOlu = ox < 0 || oy2 < 0 || ox >= COLS || oy2 >= ROWS || grid[oy2][ox] !== 0;
+      if (xOlu && oOlu) { sonuc = 0.5; break; }
+      if (xOlu) { sonuc = 0; break; }
+      if (oOlu) { sonuc = 1; break; }
+      oyuncular[0].x = hx; oyuncular[0].y = hy; oyuncular[0].dir = ham[0]; grid[hy][hx] = 1;
+      oyuncular[1].x = ox; oyuncular[1].y = oy2; oyuncular[1].dir = ham[1]; grid[oy2][ox] = 2;
+    }
+    return sonuc;
+  } finally {
+    grid = kGrid; oyuncular = kOy; rastgele = kRas;
+  }
+}
+
+// kıyas reddinde self-fix beslemesine somut kanıt: aday hangi tikte, nerede, neden öldü?
+function kiyasTeshis(kodAday, kodEski) {
+  const notlar = [];
+  for (const [seed, adayX] of [[101, true], [1198, false]]) {
+    const kGrid = grid, kOy = oyuncular, kRas = rastgele;
+    try {
+      grid = Array.from({length: ROWS}, () => new Array(COLS).fill(0));
+      oyuncular = [
+        { x: 5,  y: 15, dir: "R", canli: true, beyin: "simX" },
+        { x: 39, y: 15, dir: "L", canli: true, beyin: "simO" },
+      ];
+      oyuncular.forEach((p, i) => grid[p.y][p.x] = i + 1);
+      rastgele = mulberry32(seed);
+      const fAday = new Function("durum", kodAday + "\nreturn yonBul(durum);");
+      const fEski = new Function("durum", kodEski + "\nreturn yonBul(durum);");
+      let adayIstisna = "", sonuc = 0.5;
+      for (let t = 0; t < 900; t++) {
+        const ham = [];
+        for (const idx of [0, 1]) {
+          const p = oyuncular[idx], rk = oyuncular[1 - idx];
+          const iz = grid.map(r => r.map(k => k === 0 ? "." : k === idx + 1 ? "B" : "R").join(""));
+          const d = { ben: {x: p.x, y: p.y, yon: p.dir}, rakip: {x: rk.x, y: rk.y, yon: rk.dir}, iz, tik: t };
+          const f = ((idx === 0) === adayX) ? fAday : fEski;
+          let yon = null;
+          try { yon = String(f(d)).trim().toUpperCase(); } catch (e) {
+            yon = null;
+            if (((idx === 0) === adayX) && !adayIstisna) adayIstisna = "istisna: " + e.message;
+          }
+          ham.push((yon === "U" || yon === "D" || yon === "L" || yon === "R") ? yon : null);
+        }
+        const adayI = adayX ? 0 : 1, eskiI = adayX ? 1 : 0;
+        const kim = adayX ? "aday(X)" : "aday(O)";
+        if (!ham[adayI]) {
+          sonuc = 0;
+          notlar.push("S" + seed + " " + kim + ": aday t=" + t + "'de ÖLDÜ — " + (adayIstisna ? adayIstisna : "yonBul geçersiz/boş döndü"));
+          break;
+        }
+        if (!ham[eskiI]) { sonuc = 1; notlar.push("S" + seed + " " + kim + ": eski kod geçersiz hamle yaptı, aday kazandı"); break; }
+        const ax = oyuncular[adayI].x + YON[ham[adayI]].x, ay = oyuncular[adayI].y + YON[ham[adayI]].y;
+        const ex = oyuncular[eskiI].x + YON[ham[eskiI]].x, ey = oyuncular[eskiI].y + YON[ham[eskiI]].y;
+        if (ax === ex && ay === ey) { sonuc = 0.5; notlar.push("S" + seed + " " + kim + ": t=" + t + " kafa-kafaya (0.5)"); break; }
+        const aOlu = ax < 0 || ay < 0 || ax >= COLS || ay >= ROWS || grid[ay][ax] !== 0;
+        const eOlu = ex < 0 || ey < 0 || ex >= COLS || ey >= ROWS || grid[ey][ex] !== 0;
+        if (aOlu || eOlu) {
+          if (aOlu && eOlu) { sonuc = 0.5; notlar.push("S" + seed + " " + kim + ": t=" + t + " çift ölüm (0.5)"); }
+          else if (aOlu) { sonuc = 0; notlar.push("S" + seed + " " + kim + ": aday t=" + t + " (" + ax + "," + ay + ") hücresinde öldü — duvar/iz/kenar, eski hayattı"); }
+          else { sonuc = 1; notlar.push("S" + seed + " " + kim + ": eski t=" + t + "'de öldü, aday kazandı"); }
+          break;
+        }
+        oyuncular[adayI].x = ax; oyuncular[adayI].y = ay; oyuncular[adayI].dir = ham[adayI]; grid[ay][ax] = adayI + 1;
+        oyuncular[eskiI].x = ex; oyuncular[eskiI].y = ey; oyuncular[eskiI].dir = ham[eskiI]; grid[ey][ex] = eskiI + 1;
+        if (t === 899) notlar.push("S" + seed + " " + kim + ": 900 tik hayatta kaldı (0.5)");
+      }
+    } finally { grid = kGrid; oyuncular = kOy; rastgele = kRas; }
+  }
+  return notlar.join(" · ") || "kanıt üretilemedi";
+}
+
+// ---------- IMPROVE (taraf başına): ajan kodu evrimi — self-fix döngülü, PARALEL ----------
+let ajanCalisiyor = false;   // TEK seferde bir IMPROVE
+let ajanSon10 = { sol: [], sag: [] };   // son 10 turun sonucu (true=basarili)
+function son10Yazi(taraf) {
+  const a = ajanSon10[taraf];
+  if (!a.length) return "";
+  const ok = a.filter(Boolean).length;
+  return " (son 10: " + ok + " basarili / " + (a.length - ok) + " basarisiz)";
+}
+const bekle_ms = ms => new Promise(r => setTimeout(r, ms));
+async function apiGet(yol) { const r = await fetch(yol); return r.json(); }
+const TEST_DURUM = (() => {
+  const bos = ".".repeat(45);
+  const iz = Array.from({length: 30}, () => bos);
+  iz[15] = "BBBBB" + bos.slice(5);
+  return { ben: {x: 5, y: 15, yon: "R"}, rakip: {x: 39, y: 15, yon: "L"}, iz, tik: 1 };
+})();
+
+// kodu Worker'a yükler + ÖRNEK DURUMLA sınamalar (parse + çalışma + geçerli yön)
+function ajanKodYukle(taraf, kod) {
+  return new Promise((coz, reddet) => {
+    const w = ajanWorker[taraf];
+    if (!w) { reddet(new Error("worker yok")); return; }
+    const eski = w.onmessage;
+    const asama = { faz: "yukle" };
+    const zaman = setTimeout(() => bitir(reddet, new Error("ajan kodu test zaman aşımı (2.5 sn)")), 2500);
+    function bitir(fn, deger) { clearTimeout(zaman); w.onmessage = eski; fn(deger); }
+    w.onmessage = e => {
+      const m = e.data;
+      if (asama.faz === "yukle") {
+        if (m.tip === "kodHata") { bitir(reddet, new Error("parse hatası: " + m.hata)); return; }
+        if (m.tip === "kodOk") { asama.faz = "test"; w.postMessage({ tip: "durum", durum: TEST_DURUM }); return; }
+      } else if (asama.faz === "test" && m.tip === "yon") {
+        if (m.yon) bitir(coz, m.yon);
+        else bitir(reddet, new Error("geçersiz yön döndü: '" + (m.ham || "(boş)") + "' — yonBul yalnızca BÜYÜK HARF U/D/L/R döndürmeli" + (m.hata ? " · hata: " + m.hata : "")));
+      }
+    };
+    w.postMessage({ tip: "kod", kod });
+  });
+}
+
+async function improveTuru(taraf) {
+  ajanCalisiyor = true;
+  document.getElementById("btnImproveSol").disabled = true;
+  document.getElementById("btnImproveSag").disabled = true;
+  const agentKim = taraf === "sag" ? "🧠 AGENT-SAĞ (GLM-5.3-Flash)" : "🧠 AGENT-SOL (GLM-5.3-Flash)";
+  const dusunme = document.getElementById(taraf === "sag" ? "selDusunSag" : "selDusunSol").value;
+  const panelYaz = taraf === "sag" ? sagYaz : solYaz;
+  // model kaç adım gerekiyorsa kendisi karar verir; bu yalnızca güvenlik tavanı
+  const girilen = parseInt(document.getElementById(taraf === "sag" ? "adimMaksSag" : "adimMaksSol").value);
+  const MAKS_ADIM = Math.min(Math.max(isNaN(girilen) ? 24 : girilen, 3), 60);
+  let ok = false, sonHata = "";
+  try {
+    // ZCode tarzı patch döngüsü: küçük değişiklik → anında test → sonucu gör → sonraki adımı seç
+    const eskiCevap = await apiGet("/api/ajan?taraf=" + taraf);
+    const eskiKod = eskiCevap.ok ? eskiCevap.kod : AI_STUB;
+    panelYaz("sistem", "", "🧩 PATCH DÖNGÜSÜ (" + agentKim + " · otonom adım, tavan " + MAKS_ADIM + " · düşünme: " + dusunme + ") — her adımda 1 küçük değişiklik + anında kıyas; bitirme kararı modelde");
+    const ilkPrompt =
+      "[ROL] TRON avcı botunun kodunu ADIM ADIM geliştireceksin — kod yardımcısı gibi: her mesajda TEK KÜÇÜK DEĞİŞİKLİK öner, " +
+      "test sonucunu sana vereceğim, ona göre SONRAKİ küçük değişikliği seçeceksin.\n" +
+      "[MEVCUT KOD]\n" + eskiKod + "\n" +
+      "[KISITLAR] Her cevapta yeni_kod = önceki kodun aynısı + TEK küçük değişiklik (1-5 satır). Kodun TAMAMINI gönder.\n" +
+      "Kıyas 900 tiklik HAYATTA KALMA yarışıdır; beraberlik bile kabul. Şampiyon tüm oyunlarda hayatta kalıyor — " +
+      "güvenlik çekirdeğini (flood-fill, koridor sayımı) ASLA çıkarma.\n" +
+      "[OTONOMİ] Kaç adım süreceğine SEN karar verirsin: her cevapta \"devam\": true (daha fazla adım istiyorum) veya " +
+      "\"devam\": false (tatmin oldum, en iyi adayı kilitle) döndür. Hedefe ulaştıysan ya da daha iyileşme öngörmüyorsan devam:false ver.\n" +
+      '[ÇIKTI] Yalnızca JSON: {"degisiklik": "tek cümle", "yeni_kod": "function yonBul(durum) {...} tam içerik", "devam": true}';
+    const mesajlar = [{ role: "user", content: ilkPrompt }];
+    let enIyi = { kod: eskiKod, yS: 0, eS: 6, adim: 0, degisiklik: "(mevcut kod)" };
+    const adimKayit = [];
+    let durgunluk = 0, devam = true;
+    for (let adim = 1; adim <= MAKS_ADIM && devam; adim++) {
+      if (window.__hepsiniDurdur) {
+        panelYaz("sistem", "", "⏹ DURDURULDU — patch döngüsü kesildi, mevcut sürüm korundu (" + (enIyi.adim ? "en iyi: adım " + enIyi.adim + " · kıyas " + enIyi.yS + "-" + enIyi.eS : "uygulanmış adım yok") + ")");
+        break;
+      }
+      panelYaz("sistem", "", "① ADIM " + adim + " (tavan " + MAKS_ADIM + ") — modelden küçük değişiklik isteniyor…");
+      altyaziGoster('\uD83E\uDDE0 <span class="renk" style="color:#b388ff">ADIM ' + adim + '</span> — küçük değişiklik deneniyor', 5);
+      const r = await apiPost("/api/ajan_adim", { taraf, dusunme, adim, toplam: MAKS_ADIM, mesajlar });
+      if (window.__hepsiniDurdur) {
+        panelYaz("sistem", "", "⏹ DURDURULDU — dönen adım sonucu yok sayıldı, mevcut sürüm korundu");
+        break;
+      }
+      if (!r.ok) {
+        sonHata = "adım hatası: " + (r.hata || "?");
+        panelYaz("uyari", "💥 ADIM " + adim, sonHata);
+        break;
+      }
+      mesajlar.push({ role: "assistant", content: r.ham });
+      const kod = String((r.parsed && r.parsed.yeni_kod) || "").replace(/^```[a-zA-Z]*\s*/, "").replace(/```\s*$/, "").trim();
+      if (!kod) {
+        mesajlar.push({ role: "user", content: 'CEVABIN JSON DEĞİL veya yeni_kod yok. Yalnızca JSON döndür: {"degisiklik": "...", "yeni_kod": "function yonBul(durum) {...} tam içerik", "devam": true}. Tavan adım: ' + MAKS_ADIM });
+        panelYaz("uyari", "⚠️ ADIM " + adim, "geçersiz cevap — modele düzeltmesi söylendi");
+        continue;
+      }
+      let sg = true, sh = "";
+      try { await ajanKodYukle(taraf, kod); } catch (e) { sg = false; sh = e.message; }
+      let yS = 0, eS = 0; const detay = [];
+      if (sg) {
+        for (let sIdx = 0; sIdx < 6; sIdx++) {
+          const seed = 101 + sIdx * 53;
+          const y = ajanSanalMac(kod, eskiKod, seed);
+          const e = ajanSanalMac(eskiKod, kod, seed + 997);
+          yS += y; eS += e; detay.push("S" + (sIdx + 1) + ":" + y + "-" + e);
+        }
+      }
+      const kanit = sg ? ((yS < eS) ? kiyasTeshis(kod, eskiKod) : "kayıp yok") : ("SANDBOX: " + sh);
+      const modelDevam = !!(r.parsed && r.parsed.devam);
+      panelYaz("insan", "🧪 ADIM " + adim + " SONUCU", (sg ? ("KIYAS " + yS + " — " + eS + " (" + detay.join(" · ") + ") · durgunluk " + durgunluk) : ("SANDBOX HATASI: " + sh)) + " · " + ((r.parsed && r.parsed.degisiklik) || "") + " · devam: " + modelDevam + " · " + String(kanit).slice(0, 140));
+      adimKayit.push({ adim, degisiklik: String((r.parsed && r.parsed.degisiklik) || "").slice(0, 200), sonuc: sg ? ("kıyas " + yS + "-" + eS) : ("sandbox hatası: " + String(sh).slice(0, 80)), devam: !!(r.parsed && r.parsed.devam) });
+      if (sg && (yS - eS) > (enIyi.yS - enIyi.eS)) { enIyi = { kod, yS, eS, adim, degisiklik: String((r.parsed && r.parsed.degisiklik) || "") }; durgunluk = 0; }
+      else if (sg) { durgunluk++; }
+      if (sg && yS >= eS) {
+        if (!modelDevam) { panelYaz("sistem", "", "✅ Kıyas geçildi (adım " + adim + ") — model tatmin oldu, döngü bitiriliyor"); break; }
+        panelYaz("sistem", "", "✅ Kıyas geçildi (adım " + adim + ") — model daha iyisi için devam ediyor…");
+      } else if (!modelDevam) {
+        panelYaz("sistem", "", "🛑 Model devam etmeme kararı aldı (adım " + adim + ") — en iyi aday kilitlecek");
+        break;
+      } else if (durgunluk >= 8) {
+        panelYaz("uyari", "🛑 DURGUNLUK", adim + " adımdır iyileşme yok (son 8'de 0) — güvenlik tavani devreye girdi");
+        break;
+      }
+      mesajlar.push({ role: "user", content:
+        "TEST SONUCU (ADIM " + adim + "): " + (sg ? ("kıyas " + yS + "-" + eS + ". KANIT: " + String(kanit).slice(0, 220)) : ("SANDBOX HATASI: " + sh)) +
+        ". Şu ana kadarki EN İYİ skorumuz: " + enIyi.yS + "-" + enIyi.eS + " (adım " + enIyi.adim + "). Tavan adım: " + MAKS_ADIM +
+        (durgunluk >= 3 ? ". DİKKAT: son " + durgunluk + " adımda iyileşme yok — köklü farklı bir yaklaşım dene ya da devam:false ile bitir." : "") +
+        '. Değişiklik işe yaradıysa AYNI temelde üstüne ekle; yaramadıysa O DEĞİŞİKLİĞİ GERİ AL ve farklı bir küçük düzeltme öner. Yalnızca JSON: {"degisiklik": "...", "yeni_kod": "tam kod", "devam": true|false}' });
+    }
+    panelYaz("insan", "🏁 PATCH DÖNGÜSÜ BİTTİ", "EN İYİ: adım " + (enIyi.adim || "-") + " · kıyas " + enIyi.yS + " — " + enIyi.eS);
+    if (window.__hepsiniDurdur) {
+      panelYaz("uyari", "⏹ DURDURULDU", "döngü bittiğinde durdurma aktifti — aday uygulanmadı, mevcut sürüm korundu");
+    } else {
+    const gecti = enIyi.yS >= enIyi.eS;
+    const kayit = {
+      model: "glm-5.3-flash", dusunme, agent: agentKim,
+      durum: gecti ? "PATCH DONGUSU: ADAY HAZIR" : "REDDEDILDI",
+      ozet: enIyi.adim ? ("patch döngüsü " + adimKayit.length + " adım; en iyi adım " + enIyi.adim + ": " + enIyi.degisiklik + " (kıyas " + enIyi.yS + "-" + enIyi.eS + ")") : "adım üretilemedi",
+      adimlar: adimKayit,
+      adim_sayisi: adimKayit.length,
+      maks_adim: MAKS_ADIM,
+      aday_kod: gecti ? enIyi.kod : null,
+      secilen_aday: gecti ? ("adım " + enIyi.adim) : null,
+      memory_ek: gecti ? [enIyi.adim + ". adım değişikliği uygulandı: " + enIyi.degisiklik + " — kıyas " + enIyi.yS + "-" + enIyi.eS + " geçti"] : [],
+      sebep: gecti ? null : ("patch döngüsü (" + adimKayit.length + " adım) kıyası geçemedi; en iyi: " + enIyi.yS + "-" + enIyi.eS)
+    };
+    const kaydet = await apiPost("/api/ajan_kayit", { taraf, kayit });
+    if (!kaydet.ok) panelYaz("uyari", "💥", "tur kaydı yazılamadı");
+    const turNo = kaydet.turNo;
+    if (gecti) {
+      const uygula = await apiPost("/api/ajan_uygula", { taraf, turNo });
+      if (!uygula.ok) { panelYaz("uyari", "💥", uygula.hata || "uygulanamadı"); }
+      else {
+        ok = true;
+        yayinBildirim("\uD83D\uDCE3 YENI SURUM " + uygula.surum + " YAYINLANDI — sonraki macta etkili", 5);
+        ajanSon10[taraf].push(true);
+        if (ajanSon10[taraf].length > 10) ajanSon10[taraf].shift();
+        ajanSurum[taraf] = uygula.surum_no;
+        ajanHataSay[taraf] = 0;
+        rozetGuncelle(taraf);
+        panelYaz("insan", "📁 DEĞİŞEN DOSYALAR", (uygula.degisen_dosyalar || []).map(x => "• " + x).join("<br>"));
+        panelYaz("sistem", "", "📢 YENİ SÜRÜM " + (uygula.surum || "?") + " yayınlandı — " + adimKayit.length + " adımlık döngünün en iyi adımı (adım " + enIyi.adim + ")");
+      }
+    } else {
+      await apiPost("/api/ajan_red", { taraf, turNo, sebep: kayit.sebep });
+      panelYaz("uyari", "💥 PATCH DÖNGÜSÜ", "hiçbir adım kıyası geçemedi (en iyi " + enIyi.yS + "-" + enIyi.eS + ") — IMPROVE'u tekrar çalıştır");
+    }
+    if (!ok) panelYaz("uyari", "💥 AJAN", "patch döngüsü geçerli aday üretemedi — IMPROVE'u tekrar çalıştır");
+    }
+  } catch (e) {
+    panelYaz("uyari", "💥 IMPROVE", "hata: " + e.message);
+  } finally {
+    ajanCalisiyor = false;
+    if (bekleyenImprove && !window.__hepsiniDurdur) {
+      const bek = bekleyenImprove; bekleyenImprove = null;
+      setTimeout(() => improveTuru(bek), 1500);
+    }
+    document.getElementById("btnImproveSol").disabled = false;
+    document.getElementById("btnImproveSag").disabled = false;
+  }
+}
+
+// ---------- hafıza çekmeceleri: büyük pop-up modalı açar (taraf filtreli) ----------
+function dosyaListele(taraf) {
+  if (modal.style.display === "block" && modalTaraf === taraf) modalDoldur();
+}
+// ---------- YAYIN MODU: altyazi + buyuk bildirimler ----------
+function altyaziGoster(metin, sureSn) {
+  const el = document.getElementById('altyazi');
+  if (!el) return;
+  el.innerHTML = metin;
+  el.style.display = 'block';
+  if (sureSn) {
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function() { el.style.display = 'none'; }, sureSn * 1000);
+  }
+}
+function yayinBildirim(metin, sureSn) {
+  const el = document.getElementById('yayinBildirim');
+  if (!el) return;
+  el.innerHTML = metin;
+  el.style.display = 'block';
+  if (sureSn) {
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function() { el.style.display = 'none'; }, sureSn * 1000);
+  }
+}
+document.body.classList.add('yayinModu');
+
+// ---------- 10LUK SERI SURUCUSU ----------
+window.__seri = { aktif: false, n: 0, kayit: [] };
+window.seri10 = async function() {
+  if (window.__seri.aktif) return;
+  window.__seri.aktif = true;
+  window.__seri.n = 0;
+  window.__seri.kayit = [];
+  const btn = document.getElementById("btnSeri");
+  if (btn) btn.disabled = true;
+  for (let n = 1; n <= 10 && window.__seri.aktif; n++) {
+    startMac();
+    window.__seri.n = n;
+    let guard = 0;
+    while (document.getElementById("overlay").style.display !== "flex" && guard < 7200) {
+      await new Promise(r => setTimeout(r, 250)); guard++;
+    }
+    // kaybeden otomatik improve: baslamasini bekle (2 sn gecikme)
+    await new Promise(r => setTimeout(r, 3000));
+    // improve bitene kadar bekle (max 10 dk)
+    let bek = 0;
+    while (ajanCalisiyor && bek < 24000) { await new Promise(r => setTimeout(r, 250)); bek++; }
+    await new Promise(r => setTimeout(r, 1000));
+    window.__seri.kayit.push({ n, rozetler: [document.getElementById("surumSol").textContent, document.getElementById("surumSag").textContent] });
+    ikisineYaz("SERI: " + n + "/10 oyun tamamlandi");
+  }
+  window.__seri.aktif = false;
+  if (btn) btn.disabled = false;
+  ikisineYaz("SERI TAMAMLANDI: 10 oyun bitti");
+};
+
+// ---------- EGIITIMx100 SURUCUSU: 100 oyun + kaybeden otomatik IMPROVE ----------
+window.__egitim = { aktif: false, oyun: 0, basarili: 0, hata: 0 };
+window.egitim100 = async function() {
+  if (window.__egitim.aktif) { window.__egitim.aktif = false; return; }   // toggle stop
+  window.__egitim.aktif = true;
+  ikisineYaz("EGITIM x100: 100 oyun — kaybeden her turda otomatik IMPROVE");
+  for (let n = 1; n <= 100 && window.__egitim.aktif; n++) {
+    const btn = document.getElementById("btnEgitim100");
+    if (btn) btn.textContent = "EGITIM " + n + "/100";
+    startMac();
+    // maç bitene kadar bekle
+    let g = 0;
+    while (document.getElementById("overlay").style.display !== "flex" && g < 6000) {
+      await new Promise(r => setTimeout(r, 50)); g++;
+    }
+    // otomatik improve bitene kadar bekle
+    let b = 0;
+    while (ajanCalisiyor && b < 6000) { await new Promise(r => setTimeout(r, 100)); b++; }
+    await new Promise(r => setTimeout(r, 800));
+  }
+  window.__egitim.aktif = false;
+  if (btn) btn.textContent = "EGITIMx100";
+  ikisineYaz("EGITIM serisi tamamlandi: " + (window.__egitim.oyun) + " oyun · " + window.__egitim.basarili + " basarili improve");
+};
+
+let bekleyenImprove = null;   // kuyruktaki taraf ('sol'/'sag')
+let improveTamamlanma = { sol: 0, sag: 0 };   // basarili improve sayaci
+let improveHata = { sol: 0, sag: 0 };   // hata sayaci
+let patternHashlar = [];   // son maclarin hamle hash'leri
+
+let sonCanliMetin = { sol: "", sag: "" };
+setInterval(async () => {
+  for (const taraf of ["sol", "sag"]) {
+    try {
+      const r = await fetch("/api/ajan_stream?taraf=" + taraf);
+      const c = await r.json();
+      const el = document.getElementById(taraf === "sol" ? "canliSol" : "canliSag");
+      const durumEl = document.getElementById(taraf === "sol" ? "canliSolDurum" : "canliSagDurum");
+      if (!c.ok || !c.faz || c.faz === "beklemede") {
+        if (durumEl && durumEl.textContent !== "beklemede") durumEl.textContent = "beklemede";
+        continue;
+      }
+      if (durumEl) durumEl.textContent = "🔴 " + c.faz + " · " + c.sure + " sn · prompt " + c.prompt_kr + " kr · düşünce " + c.dusunce_kr + " kr · cevap " + c.cevap_kr + " kr";
+      const metin =
+        "── giden (son istek parçası) ──\n" + (c.giden_son || "(—)") + "\n" +
+        "── düşünceden son parçalar ──\n" + (c.dusunce_son || "(henüz)") + "\n" +
+        "── cevaptan son parçalar ──\n" + (c.cevap_son || "(henüz)");
+      if (metin !== sonCanliMetin[taraf]) {
+        sonCanliMetin[taraf] = metin;
+        el.textContent = metin;
+        if (otomatikKaydirma[el.id] !== false) el.scrollTop = el.scrollHeight;
+      }
+    } catch (e) {}
+  }
+}, 2000);
+
+// yeni sürüm gelince sayfaya yansıt (başka sekmeden/sunucudan bile olsa)
+setInterval(async () => {
+  if (ajanCalisiyor) return;
+  for (const taraf of ["sol", "sag"]) {
+    const eski = (playbookOzet[taraf] || {}).surum;
+    await playbookGetir(taraf);
+    const yeni = (playbookOzet[taraf] || {}).surum;
+    if (eski && yeni && eski !== yeni) {
+      (taraf === "sol" ? solYaz : sagYaz)("sistem", "", `🆕 yeni sürüm algılandı: ${eski} → ${yeni} — playbook yenilendi, sonraki maçlar yeni kurallarla`);
+      rozetGuncelle(taraf);
+      if (modal.style.display === "block" && modalTaraf === taraf) modalDoldur();
+    }
+  }
+}, 5000);
+document.getElementById("tglSol").onclick = () => acDosyaModal("sol");
+document.getElementById("tglSag").onclick = () => acDosyaModal("sag");
+
+// ---------- çizim ----------
+function ciz() {
+  cx.fillStyle = RENK.bg; cx.fillRect(0, 0, cv.width, cv.height);
+  cx.strokeStyle = RENK.grid; cx.lineWidth = 1;
+  for (let x = 0; x <= COLS; x++) { cx.beginPath(); cx.moveTo(x*CELL+.5, 0); cx.lineTo(x*CELL+.5, ROWS*CELL); cx.stroke(); }
+  for (let y = 0; y <= ROWS; y++) { cx.beginPath(); cx.moveTo(0, y*CELL+.5); cx.lineTo(COLS*CELL, y*CELL+.5); cx.stroke(); }
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+    const k = grid[y][x];
+    if (k === 0) continue;
+    cx.fillStyle = k === 1 ? RENK.insan : RENK.bot;
+    cx.shadowColor = cx.fillStyle; cx.shadowBlur = 8;
+    cx.fillRect(x*CELL+2, y*CELL+2, CELL-4, CELL-4);
+    cx.shadowBlur = 0;
+  }
+  for (const p of oyuncular) {
+    if (!p.canli) continue;
+    cx.fillStyle = "#ffffff"; cx.shadowColor = p.renk; cx.shadowBlur = 14;
+    cx.fillRect(p.x*CELL+1, p.y*CELL+1, CELL-2, CELL-2);
+    cx.shadowBlur = 0;
+  }
+}
+function skorYaz() {
+  document.querySelector("#sSol b").textContent = skor.sol;
+  document.querySelector("#sSag b").textContent = skor.sag;
+}
+
+// ---------- giriş ----------
+const BASLAT = { ArrowUp: "U", ArrowDown: "D", ArrowLeft: "L", ArrowRight: "R" };
+document.addEventListener("keydown", e => {
+  if (e.key === "r" || e.key === "R") { startMac(); return; }
+  if (solBeyin !== "insan") return;
+  const d = BASLAT[e.key];
+  if (!d) return;
+  e.preventDefault();
+  if (e.repeat) return;
+  const p = oyuncular[0];
+  if (!running) { running = true; overlay.style.display = "none"; ikisineYaz("— maç başladı — karar akışı canlı —"); }
+  if (d !== p.dir) {
+    const gecerli = SOL[p.dir] === d || SAG[p.dir] === d;
+    if (gecerli) {
+      const mesaj = insanAnaliz(p, p.dir, d);
+      p.dir = d;
+      solYaz("insan", "🧍 SEN", mesaj);
+    } else {
+      solYaz("sistem", "", "↩️ 180° dönüş denedin — motor izin vermiyor");
+    }
+  }
+});
+
+// ---------- seçiciler + düğmeler ----------
+const selSol = document.getElementById("selSol");
+const selSag = document.getElementById("selSag");
+selSol.onchange = () => { solBeyin = selSol.value; solYaz("sistem", "", `SOL oyuncu: ${BEYIN_AD[solBeyin]} — BAŞLAT'a bas`); };
+selSag.onchange = () => { sagBeyin = selSag.value; sagYaz("sistem", "", `SAĞ oyuncu: ${BEYIN_AD[sagBeyin]} — BAŞLAT'a bas`); };
+document.getElementById("btnBaslat").onclick = startMac;
+document.getElementById("btnEgitim100").onclick = function() {
+  if (window.__egitim.aktif) { window.__egitim.aktif = false; return; }
+  window.egitim100();
+};
+document.getElementById("btnImproveSag").onclick = () => improveTuru("sag");
+document.getElementById("btnImproveSol").onclick = () => improveTuru("sol");
+
+// ---------- OTO-IMPROVE anahtari + HEPSINI DURDUR ----------
+let otomatikImproveAcik = localStorage.getItem("otoImprove") !== "kapali";
+function otoImproveYazi() {
+  const b = document.getElementById("btnOtoImprove");
+  b.textContent = otomatikImproveAcik ? "🤖 OTO-IMPROVE: AÇIK" : "🤖 OTO-IMPROVE: KAPALI";
+  b.style.color = otomatikImproveAcik ? "" : "#ff9100";
+}
+document.getElementById("btnOtoImprove").onclick = () => {
+  otomatikImproveAcik = !otomatikImproveAcik;
+  localStorage.setItem("otoImprove", otomatikImproveAcik ? "acik" : "kapali");
+  otoImproveYazi();
+  ikisineYaz(otomatikImproveAcik
+    ? "🤖 OTO-IMPROVE AÇILDI — kaybeden ajan maç sonrası otomatik IMPROVE'a girecek"
+    : "🤖 OTO-IMPROVE KAPATILDI — kaybeden ajan merkezle konuşmayacak, sadece maç oynanacak");
+};
+otoImproveYazi();
+
+function hepsiniDurdur() {
+  window.__hepsiniDurdur = true;
+  window.__seri.aktif = false;
+  window.__egitim.aktif = false;
+  bekleme = true;   // akan maçı da dondur
+  apiPost("/api/ajan_durdur", { taraf: "sol", durdur: true }).catch(() => {});
+  apiPost("/api/ajan_durdur", { taraf: "sag", durdur: true }).catch(() => {});
+  ikisineYaz("⏹ HEPSİNİ DURDURULDU — ajanlar konuşmayı bıraktı, mevcut sürümler korundu · BAŞLAT: devam");
+  mesajGoster("⏹ DURDURULDU", "ajanlar sustu · BAŞLAT: mevcut sürümlerden devam", "#ff5252");
+}
+document.getElementById("btnHepsiDurdur").onclick = hepsiniDurdur;
+document.querySelectorAll(".hizlar button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".hizlar button").forEach(x => x.classList.remove("secili"));
+  b.classList.add("secili");
+  stepMs = +b.dataset.ms;
+  egitimCarpan = +(b.dataset.carpan || 1);
+});
+
+// ---------- dosya modalı: tüm klasör ya da taraf-filtreli hafıza görünümü ----------
+const modal = document.getElementById("dosyaModal");
+let modalTaraf = null;   // null = tüm beyin/ klasörü; "sol"/"sag" = o tarafın dosyaları
+async function modalDoldur() {
+  const agac = document.getElementById("dosyaAgac");
+  try {
+    const r = await fetch("/api/dosyalar");
+    const cevap = await r.json();
+    if (!cevap.ok) { agac.textContent = "hata: " + cevap.hata; return; }
+    let ogeler = cevap.ogeler.filter(o => o.tip === "dosya");
+    if (modalTaraf) {
+      const onEk = "ajanlar/" + modalTaraf + "/";
+      const etiketle = o => {
+        const kisa = o.yol.slice(onEk.length);
+        if (kisa === "system.md") return "📜 system.md  (manifesto — yetki ve yasaklar)";
+        if (kisa === "memory.md") return "🧠 memory.md  (ajanın hafızası — kanıtlı dersler)";
+        if (kisa === "avci.js") return "⚔️ avci.js  (GÜNCEL KOD — ajanın yazdığı yonBul)";
+        if (kisa.startsWith("turlar/")) return "🧬 " + kisa.slice(7) + "  (improve turu kaydı)";
+        if (kisa.startsWith("versiyonlar/")) return "🗂️ " + kisa.slice(13) + "  (eski sürüm kodu)";
+        return kisa;
+      };
+      ogeler = cevap.ogeler
+        .filter(o => o.tip === "dosya" && o.yol.startsWith(onEk))
+        .map(o => ({ ...o, etiket: etiketle(o) }));
+      const oncelik = e => e.includes("system.md") ? 0 : e.includes("memory.md") ? 1 : e.includes("avci.js") ? 2 : e.includes("turlar") ? 3 : 4;
+      ogeler.sort((a, b) => oncelik(a.etiket) - oncelik(b.etiket) || b.yol.localeCompare(a.yol));
+    } else {
+      const oncelik = yol =>
+        yol.includes("playbook") ? 0 : yol.includes("defter") ? 1 :
+        yol.includes("/turlar/") ? 2 : yol.includes("/maclar/") ? 3 : 4;
+      ogeler.sort((a, b) => oncelik(a.yol) - oncelik(b.yol) || b.yol.localeCompare(a.yol));
+    }
+    agac.innerHTML = "";
+    if (!ogeler.length) { agac.textContent = "bu filtre için henüz dosya yok"; return; }
+    for (const o of ogeler) {
+      const d = document.createElement("div");
+      d.className = "dosya";
+      d.textContent = (modalTaraf ? o.etiket : o.yol) + "  (" + o.boyut + "B)";
+      d.title = o.yol;
+      d.onclick = async () => {
+        agac.querySelectorAll(".dosya").forEach(x => x.classList.remove("secili"));
+        d.classList.add("secili");
+        const kutu = document.getElementById("dosyaIcerik");
+        kutu.textContent = "okunuyor…";
+        try {
+          const r2 = await fetch("/api/dosya?yol=" + encodeURIComponent(o.yol));
+          const c2 = await r2.json();
+          kutu.textContent = c2.ok ? c2.icerik : ("hata: " + c2.hata);
+        } catch (e) { kutu.textContent = "okuma hatası: " + e.message; }
+      };
+      agac.appendChild(d);
+    }
+  } catch (e) {
+    agac.textContent = "sunucuya ulaşılamadı: " + e.message;
+  }
+}
+function acDosyaModal(taraf) {
+  modalTaraf = taraf;
+  document.getElementById("dosyaBaslik1").textContent = taraf
+    ? `📁 ${taraf === "sol" ? "SOL" : "SAĞ"} AVCI — hafıza & prompt (playbook · turlar · maç kayıtları · analist arşivi)`
+    : "📁 beyin klasörü — canlı görünüm";
+  document.getElementById("dosyaIcerik").textContent = "soldan bir dosya seç…";
+  modalDoldur();
+  modal.style.display = "block";
+}
+document.getElementById("btnDosyalar").onclick = () => acDosyaModal(null);
+document.getElementById("dosyaYenile").onclick = modalDoldur;
+document.getElementById("btnGelisim").onclick = async () => {
+  if (!modalTaraf) {
+    document.getElementById("dosyaIcerik").textContent = "gelişim tablosu taraf-bazlıdır — önce SOL veya SAĞ hafıza & prompt'u açın";
+    return;
+  }
+  const kutu = document.getElementById("dosyaIcerik");
+  kutu.textContent = "sürüm geçmişi hesaplanıyor…";
+  try {
+    const r = await apiPost("/api/gelisim", { taraf: modalTaraf });
+    const c = r;
+    if (!c.ok) { kutu.textContent = "hata: " + c.hata; return; }
+    let m = `📈 ${modalTaraf.toUpperCase()} AVCI — sürüm sürüm gelişim\n(sürümler arasında oynanan maçlar · winrate = kazanma oranı)\n\n`;
+    m += "sürüm     kural  maç   G   B   M  winrate\n";
+    m += "────────  ─────  ───  ──  ──  ──  ───────\n";
+    for (const s of c.surler) {
+      m += `${s.surum.padEnd(9)} ${String(s.kural).padStart(4)}  ${String(s.mac).padStart(3)}  ${String(s.g).padStart(2)}  ${String(s.b).padStart(2)}  ${String(s.m).padStart(2)}  ${s.winrate == null ? "  —" : ("%" + s.winrate).padStart(4)}\n`;
+    }
+    kutu.textContent = m;
+  } catch (e) { kutu.textContent = "hata: " + e.message; }
+};
+document.getElementById("dosyaKapat").onclick = () => modal.style.display = "none";
+modal.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+// ---------- döngü ----------
+let sonAdim = 0;
+function dongu(t) {
+  if (running && !bekleme) {
+    let n = 0;
+    const ust = document.hidden ? egitimCarpan * 60 : egitimCarpan;   // gizli sekmede yakalama serbest
+    while (t - sonAdim >= stepMs && n < ust) {
+      if (ajanBekleyen.sol > 0 || ajanBekleyen.sag > 0) break;   // taze ajan kararı bekleniyor — bayat yönle oynama
+      sonAdim = t;
+      adim();
+      n++;
+      if (bekleme || !running) break;
+    }
+  }
+  requestAnimationFrame(dongu);
+}
+// throttle/rAF takılması karşı ters hız bekçisi: hedef tik hızına ulaşılamıyorsa eksik tikleri doğrudan bas
+let hizKontrolZaman = performance.now(), hizKontrolTik = 0;
+setInterval(() => {
+  if (!running || bekleme) { hizKontrolZaman = performance.now(); hizKontrolTik = ortakTik; return; }
+  const simdi = performance.now();
+  const gecen = simdi - hizKontrolZaman;
+  if (gecen < 800) return;
+  const atilan = ortakTik - hizKontrolTik;
+  const hedef = (gecen / 1000) * (1000 / Math.max(stepMs, 1)) * egitimCarpan * 0.4;   // hedef hızın %40'ının altı = takılmış
+  hizKontrolZaman = simdi; hizKontrolTik = ortakTik;
+  if (atilan >= hedef) return;
+  // güvenlik vanası: 1 saniyedir cevap gelmemişse bayat sayacı düşür ve yine taze-karar kapısıyla ilerle
+  ajanBekleyen.sol = 0; ajanBekleyen.sag = 0;
+  let n = 0;
+  const ust = Math.max(egitimCarpan * 30, 60);
+  while (n < ust) {
+    if (ajanBekleyen.sol > 0 || ajanBekleyen.sag > 0) break;   // patlama sırasında da bayat yönle oynama
+    adim();
+    n++;
+    if (bekleme || !running) break;
+  }
+  sonAdim = performance.now();
+  requestAnimationFrame(dongu);   // ölmüş rAF'ı yeniden canlandır
+}, 1000);
+
+overlay.style.width = "900px"; overlay.style.height = "600px";
+startMac();
+tabloCiz();
+ajanBaslat("sol"); ajanBaslat("sag");
+playbookGetir("sol"); playbookGetir("sag");
+solYaz("sistem", "", "— SOL: Agent-2 (GLM-5.3-Flash) koçluğunda AVCI — IMPROVE ile eğitilir —");
+sagYaz("sistem", "", "— SAĞ: Agent-1 (GLM-5.3-Flash) koçluğunda AVCI — IMPROVE ile eğitilir · akış: maç → telemetri → analist → hakem → yeni sürüm —");
+requestAnimationFrame(dongu);
+</script>
+</body>
+</html>

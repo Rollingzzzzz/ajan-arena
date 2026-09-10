@@ -1,0 +1,189 @@
+{
+  "beyin": "avci",
+  "taraf": "sag",
+  "surum": "v1.003",
+  "taban": "kovalama skoru: rakip rotasina yaklas + bolge dengesi (motor kodunda sabit)",
+  "kurallar": [
+    {
+      "id": "R001",
+      "surum": "v1.001",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "kafaRiski",
+        "op": "==",
+        "deger": 1
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 2,
+          "bolge": null
+        }
+      },
+      "gerekce": "Beraberlik iki avcının kafasının aynı tikte aynı noktada buluşmasından doğdu; kafalar bitişikken kovalamaya devam etmek yerine kaçış moduna geçip rakip kafasından uzaklık ağırlığını 2.0'a çekmek karşılıklı ölümü önler ve beraberliği galibiyete çevirir.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:38"
+    },
+    {
+      "id": "R002",
+      "surum": "v1.001",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "bolgePayim",
+        "op": ">=",
+        "deger": 60
+      },
+      "etki": {
+        "modDegistir": "av",
+        "katsayi": {
+          "mesafe": 1.8,
+          "bolge": null
+        }
+      },
+      "gerekce": "Bölge payı 73'e çıktığı halde maç berabere kaldı; nefes alanım %60 üzerindeyken rakip zaten daraldığı için av moduyla kovalamayı güçlendirmek onu duvara sıkıştırıp hata yaptırır ve toprak üstünlüğünü sonuca bağlar.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:38"
+    },
+    {
+      "id": "R003",
+      "surum": "v1.002",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "olumTehlikesi",
+        "op": "==",
+        "deger": 1
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 2,
+          "bolge": null
+        }
+      },
+      "gerekce": "Avcının bilinen zayıflığı köşede sıkışmaktır; üç yönde de açık hücre azaldığında kovalamayı bırakıp en açık yönü seçmek, rakibi çembere alırken kendi izimize/duvara çarpmayı önler ve bu maçtaki şanslı, kuralsız kazanmayı savunma ağıyla kalıcılaştırır.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:47"
+    },
+    {
+      "id": "R004",
+      "surum": "v1.002",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "rakipMesafe",
+        "op": "<=",
+        "deger": 5
+      },
+      "etki": {
+        "modDegistir": "av",
+        "katsayi": {
+          "mesafe": 1.8,
+          "bolge": null
+        }
+      },
+      "gerekce": "Bu maçta bölge payı 48-50'ye düşerken R002'nin %60 şartı hiç sağlanmadan saf yakın kovalamayla kazandık; rakip 5 hücreye yaklaştığında bölge şartı aramadan av moduna geçmek, işe yarayan bu kazanma desenini kurala sabitler ve rakibi sıkıştırma baskısını toprak avantajından bağımsız hale getirir (kafaRiski durumunda R001 önce okunduğu için bitişik mesafede yine kaçış öncelikli kalır).",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:47"
+    },
+    {
+      "id": "R005",
+      "surum": "v1.003",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "bolgePayim",
+        "op": "<=",
+        "deger": 25,
+        "ve": {
+          "alan": "rakipMesafe",
+          "op": ">=",
+          "deger": 8
+        }
+      },
+      "etki": {
+        "modDegistir": "genis",
+        "katsayi": {
+          "mesafe": null,
+          "bolge": 1
+        }
+      },
+      "gerekce": "Bu maç %21 bölge payıyla kazanıldı; eğri 37'den 21'e düşerken rakip 8+ hücre uzaktayken kovalamak boşa tik harcadı ve tek bir yanlış dönüş kayıpla bitebilirdi — alan kritik eşiğin altına inip rakip uzaktayken bölge büyütmeye dönmek nefes alanını toplayıp uzun maçlarda köşe-sıkışması kayıplarını önler, rakip yakınken (<=5) ise R004 önce okunduğu için işe yarayan yakın-sıkıştırma deseni bozulmaz.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:52"
+    },
+    {
+      "id": "R006",
+      "surum": "v1.003",
+      "ekleyen": "🧠 AGENT-1 (GLM-5.3-Flash)",
+      "kosul": {
+        "alan": "onAciklik",
+        "op": "<=",
+        "deger": 4
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 2,
+          "bolge": null
+        }
+      },
+      "gerekce": "Avcının bilinen zaafı köşede sıkışmak ve R003 ancak üç yön neredeyse kapandığında devreye girip son anda kurtarmaya çalışıyor; önümüzdeki açık hücre 4'ün altına indiğinde erken kaçış moduna geçmek, ölümcül duruma düşmeden önce en açık yöne dönüş sağlar ve bu maçtaki 881 tiklik dar alan oyununda gelecekteki tek hamlelik ölümleri engeller.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:52"
+    }
+  ],
+  "gecmis": [
+    {
+      "surum": "v1.001",
+      "degisiklik": "2 yeni kural",
+      "hakem": "yeni 5 vs eski 5 (5 tohum)",
+      "tarih": "2026-09-09 15:38"
+    },
+    {
+      "surum": "v1.002",
+      "degisiklik": "2 yeni kural",
+      "hakem": "yeni 5 vs eski 5 (5 tohum)",
+      "tarih": "2026-09-09 15:47"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "2 yeni kural",
+      "hakem": "yeni 5 vs eski 5 (5 tohum)",
+      "tarih": "2026-09-09 15:52"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "öneri reddedildi",
+      "degisenler": [
+        "❌ öneri kabul edilmedi: smoke test — karar zinciri doğrulaması"
+      ],
+      "hakem": "smoke test — karar zinciri doğrulaması",
+      "tarih": "2026-09-09 16:13"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "öneri reddedildi",
+      "degisenler": [
+        "❌ öneri kabul edilmedi: smoke test — karar zinciri doğrulaması"
+      ],
+      "hakem": "smoke test — karar zinciri doğrulaması",
+      "tarih": "2026-09-09 16:14"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "öneri reddedildi",
+      "degisenler": [
+        "❌ öneri kabul edilmedi: smoke test — karar zinciri doğrulaması"
+      ],
+      "hakem": "smoke test — karar zinciri doğrulaması",
+      "tarih": "2026-09-09 16:19"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "öneri reddedildi",
+      "degisenler": [
+        "❌ öneri kabul edilmedi: zincir doğrulama"
+      ],
+      "hakem": "zincir doğrulama",
+      "tarih": "2026-09-09 16:47"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Üretilen kayıt/çıktı dosyaları
+video/
+*.mp4
+*.webm
+
+# Python
+__pycache__/
+*.pyc
+
+# Ortam / gizli anahtar dosyaları (anahtarlar asla depoya girmez; ZAI_API_KEY ortam değişkeniyle verilir)
+.env
+.env.*
+
+# Bağımlılıklar
+node_modules/

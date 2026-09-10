@@ -1,0 +1,33 @@
+{
+  "macNo": 90,
+  "taraf": "sol",
+  "surum": "v1.003",
+  "aktifKurallar": "R001,R002,R003,R004,R005,R006",
+  "sonuc": "kaybetti",
+  "tik": 42167,
+  "olum": {
+    "taraf": "sol",
+    "tik": 42167,
+    "x": 42,
+    "y": 23
+  },
+  "kacisSayisi": 0,
+  "bolgeEgrisi": [
+    48,
+    47,
+    45,
+    45,
+    45,
+    44,
+    44,
+    43,
+    43,
+    36,
+    35,
+    34,
+    33,
+    31
+  ],
+  "rakip": "ai",
+  "tarih": "2026-09-10T00:26:40.313Z"
+}

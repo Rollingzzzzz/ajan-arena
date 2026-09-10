@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>LLM Kullanım Desenleri — Bir Bakışta</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#05060a; color:#cfd8dc; font-family:"Segoe UI",system-ui,sans-serif; padding:26px; }
+  h1 { color:#00e5ff; text-shadow:0 0 18px rgba(0,229,255,.5); font-size:24px; letter-spacing:3px; text-align:center; }
+  .sub { text-align:center; color:#5f6a72; font-size:13px; margin:6px 0 24px; letter-spacing:.5px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(430px,1fr)); gap:16px; max-width:1500px; margin:0 auto; }
+  .kart { background:#0b0e15; border:1px solid #1c232e; border-radius:10px; padding:14px 16px; }
+  .kart h2 { font-size:15px; letter-spacing:1px; margin-bottom:2px; }
+  .kart .no { font-size:11px; color:#5f6a72; letter-spacing:2px; }
+  .kart p  { font-size:12.5px; color:#9aa7b0; margin:8px 0; line-height:1.45; }
+  .rozetler { margin:6px 0 2px; }
+  .rozet { display:inline-block; font-size:10.5px; padding:2px 8px; border-radius:10px; margin-right:5px; margin-bottom:3px;
+           border:1px solid; letter-spacing:.3px; }
+  .anim { position:relative; height:74px; background:#070a10; border:1px solid #141a24; border-radius:8px; margin-top:8px; overflow:hidden; }
+  .k { position:absolute; top:24px; height:26px; padding:0 8px; line-height:26px; font-size:10.5px; border-radius:5px;
+       background:#0d1219; border:1px solid; white-space:nowrap; }
+  .p { position:absolute; top:36px; width:7px; height:7px; border-radius:50%; opacity:0; }
+  .geri { position:absolute; top:7px; width:7px; height:7px; border-radius:50%; opacity:0; }
+  .akis  { animation:akis 2.6s linear infinite; }
+  .akis2 { animation:akis 2.6s linear infinite; animation-delay:1.3s; }
+  @keyframes akis { 0%{opacity:0; transform:translateX(0) scale(.6);} 12%{opacity:1; transform:translateX(8%) scale(1);}
+                    88%{opacity:1;} 100%{opacity:0; transform:translateX(var(--mx,300px)) scale(.6);} }
+  .akisG { animation:akisG 3.4s linear infinite; }
+  @keyframes akisG { 0%{opacity:0; transform:translateX(0);} 15%{opacity:1;} 85%{opacity:1;} 100%{opacity:0; transform:translateX(var(--gx,-300px));} }
+  .yanip { animation:yanip 2.6s ease-in-out infinite; }
+  @keyframes yanip { 0%,100%{box-shadow:0 0 0 rgba(255,255,255,0);} 50%{box-shadow:0 0 14px currentColor;} }
+  .pekiyi,.kotu { display:inline-block; font-size:11px; margin-top:6px; padding:1px 7px; border-radius:4px; }
+  .pekiyi { color:#69f0ae; border:1px solid #1b422c; }
+  .kotu   { color:#ff8a80; border:1px solid #4c1f1c; }
+</style>
+</head>
+<body>
+<h1>LLM KULLANIM DESENLERİ</h1>
+<div class="sub">aynı model, yedi farklı hayat — her desen kendi uygulama dünyamızdan bir örnekle · sayfa canlı, akışlar sonsuz döngüde</div>
+<div class="grid" id="grid"></div>
+
+<script>
+"use strict";
+const K = (x,y,txt,renk,w) =>
+  `<div class="k" style="left:${x}px; top:${y}px; color:${renk}; border-color:${renk}44; ${w?`width:${w}px; text-align:center;`:''}">${txt}</div>`;
+const P = (x,renk,mx,cls) =>
+  `<div class="${cls||'akis'} p" style="left:${x}px; background:${renk}; box-shadow:0 0 8px ${renk}; --mx:${mx}px;"></div>`;
+const PG = (x,renk,gx) =>
+  `<div class="akisG geri" style="left:${x}px; background:${renk}; box-shadow:0 0 8px ${renk}; --gx:${gx}px;"></div>`;
+
+const C = { cyan:"#00e5ff", yesil:"#69f0ae", sari:"#ffd740", mor:"#b388ff", turuncu:"#ff9100", kirmizi:"#ff5252", pembe:"#ff80ab" };
+
+const DESENLER = [
+{ isim:"1 · SOHBET (Naive)", renk:C.cyan,
+  ozet:"İnsan sorar, model cevaplar. Bellek yok, sözleşme yok — her mesaj kendi kaderini yaşar. Chatbotların ham hâli.",
+  iyi:"En basit başlangıç — bir API çağrısı", koti:"Çıktıya güvenemezsin: format uçar, kurallar yumuşar",
+  anim: K(18,0,"İNSAN",C.cyan) + K(320,0,"LLM",C.cyan) + P(90,C.cyan,180) + P(90,C.cyan,180,"akis2")
+        + `<div style="position:absolute; left:120px; top:58px; font-size:9.5px; color:#5f6a72;">soru → cevap → (unutulur)</div>` },
+
+{ isim:"2 · SÖZLEŞME + HAKEM (Contract & Validator)", renk:C.yesil,
+  ozet:"Prompt'a kural tablosu + örnekler (sözleşme) koyarsın; cevap JSON'da gelir, kod tarafındaki HAKEM onu ölçer: GECTI / REDDI. SRE-FOR-ALL'ın LLM çağrıcısı tam bu: log örneği girer, regex kuralları çıkar — sonra işi CPU motoru devralır, LLM sahneden çıkar.",
+  rozet:["SRE-FOR-ALL · kural üretici","deney-template · GECTI/REDDI"],
+  iyi:"Deterministik gibi kullanılabilir sonuç", koti:"Sözleşme yazmak emek ister; kötü sözleşme = kötü ürün",
+  anim: K(10,0,"girdi",C.yesil) + K(120,0,"+ SÖZLEŞME",C.yesil) + K(260,0,"LLM → JSON",C.yesil) + K(410,0,"HAKEM",C.yesil)
+        + P(85,C.yesil,25) + P(220,C.yesil,30) + P(360,C.yesil,40) },
+
+{ isim:"3 · BELLEK (memory.json — deneyimden few-shot)", renk:C.sari,
+  ozet:"Hakemin REDDI'leri ve insan düzeltmeleri bir dosyada birikir; her yeni çağrıda bu ONAYLI ÖRNEKLER prompt'a geri döner. Model hatırlamaz — biz hatırlatırız. Deney-template'de tasarladığımız 👍/👎 düzeninin kalbi.",
+  rozet:["deney-template · ONAYLI ÖRNEKLER"],
+  iyi:"Kullanıldıkça kişiselleşir, düzeltme azalır", koti:"Bellek büyürse seçmek gerekir (bağlam bütçesi)",
+  anim: K(15,0,"istek",C.sari) + K(120,0,"prompt + örnekler",C.sari) + K(300,0,"LLM",C.sari)
+        + K(20,44,"💾 bellek.json",C.sari,90) + P(95,C.sari,15) + P(240,C.sari,45)
+        + PG(230,C.sari,-140) + `<div style="position:absolute; right:14px; bottom:6px; font-size:9.5px; color:#5f6a72;">↺ örnekler geri beslenir</div>` },
+
+{ isim:"4 · RAG (Bilgiye Erişim)", renk:C.mor,
+  ozet:"Büyük bilgi sığmaz modele → parçalanır, gömülür (embedding). Soru gelince SADECE ilgili parçalar toplanıp 'kaynak olarak' prompt'a konur. Cevap alıntı ister — halüsinasyon freni bu.",
+  iyi:"Devasa bilgiyi taze tutar, kaynak gösterir", koti:"Yanlış parça bulunursa cevap da sapar",
+  anim: K(12,44,"📚 KAYNAK",C.mor,80) + K(130,44,"✂ parçala",C.mor,70) + K(235,44,"🔎 bul",C.mor,55)
+        + K(320,0,"soru + parçalar → LLM",C.mor) + P(100,C.mor,20) + P(200,C.mor,20) + P(295,C.mor,10)
+        + PG(420,C.mor,-160) },
+
+{ isim:"5 · AJAN (Araç Çağıran Döngü)", renk:C.turuncu,
+  ozet:"LLM düşünür → ARAÇ çağırır (dosya oku, komut çalıştır...) → sonucu görür → tekrar düşünür → ... → DUR koşulu. ReAct deseni; Zate'nin de özü bu: her cevabın arkasında bu döngü dönüyor.",
+  rozet:["Zate'nin çalışma şekli"],
+  iyi:"Hedefe kendi yolunu bulur, bilinmeyen görevlere uyar", koti:"Döngü control şart — yanlış yönde token yakar",
+  anim: K(15,0,"HEDEF",C.turuncu) + K(120,0,"düşün",C.turuncu) + K(230,0,"araç ⚙",C.turuncu) + K(340,0,"sonuç",C.turuncu)
+        + P(90,C.turuncu,20) + P(200,C.turuncu,20) + P(310,C.turuncu,20)
+        + PG(360,C.turuncu,-210) + K(440,0,"↻ DUR",C.turuncu)
+        + `<div style="position:absolute; left:16px; top:58px; font-size:9.5px; color:#5f6a72;">araçtan dönen bilgi tekrar düşünmeye girer</div>` },
+
+{ isim:"6 · PLAYBOOK (ACE — kendi kuralını yazan)", renk:C.pembe,
+  ozet:"Desen 3'ün ağabeyi: birikmiş dersler örnek olarak değil KURAL olarak yazılır ve playbook düzenli BAŞTAN YAZILIR (eskiler silinir, benzerler birleşir). Maç/görev bitince konsolidatör devreye girer. TRON botunun gelecekteki beyni.",
+  rozet:["TRON botu · yol haritası","ACE · arXiv 2510.04618"],
+  iyi:"Fine-tune'suz kendini geliştirir — gelişim okunabilir metin", koti:"Kötü ders kötü kuralla çoğalır; hakem kalitesi kritik",
+  anim: K(15,0,"maç/görev",C.pembe) + K(140,0,"YÜRÜTÜCÜ",C.pembe) + K(265,0,"HAKEM",C.pembe) + K(370,44,"📝 PLAYBOOK",C.pembe)
+        + P(110,C.pembe,20) + P(235,C.pembe,15)
+        + PG(300,C.pembe,-120) + P(60,C.pembe,90,"akis2")
+        + `<div style="position:absolute; right:14px; top:6px; font-size:9.5px; color:#5f6a72;">↺ yeniden yazılan kurallar başa döner</div>` },
+
+{ isim:"7 · FINE-TUNING (ağırlık değiştirme — kalıcı kimlik)", renk:C.kirmizi,
+  ozet:"Prompt'la değil modelin KENDİ ağırlıklarıyla oynarsın: binlerce örnekle yeni bir model doğar. Öğrenme kalıcıdır ama pahalıdır ve frekans tablosu gibi değişken bilgiye yazılmaz. Biz 'hayır' dedik: log başına istatistik değişir, prompt'a aittir.",
+  rozet:["bizde: gerek yok → prompt yeter"],
+  iyi:"Gerçek kalıcı uzmanlık, tek kuruş çağrı sonrası", koti:"Veri+maliyet+iş; yanlış öğrenmeyi geri almak zor",
+  anim: K(15,0,"10.000 örnek",C.kirmizi) + K(170,0,"EĞİTİM ⚙",C.kirmizi) + K(330,0,"YENİ MODEL",C.kirmizi)
+        + P(120,C.kirmizi,30) + P(280,C.kirmizi,25)
+        + `<div style="position:absolute; left:16px; top:58px; font-size:9.5px; color:#5f6a72;">ağırlıklar değişir → kişilik değişir (geri dönüş yok)</div>` },
+];
+
+document.getElementById("grid").innerHTML = DESENLER.map(d => `
+  <div class="kart" style="border-color:${d.renk}33">
+    <div class="no">DESSEN</div>
+    <h2 style="color:${d.renk}; text-shadow:0 0 12px ${d.renk}55">${d.isim}</h2>
+    <div class="rozetler">${(d.rozet||[]).map(r=>`<span class="rozet" style="color:${d.renk}; border-color:${d.renk}55">${r}</span>`).join("")}</div>
+    <p>${d.ozet}</p>
+    <div class="anim">${d.anim}</div>
+    <span class="pekiyi">✔ ${d.iyi}</span> <span class="kotu">✘ ${d.koti}</span>
+  </div>`).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "model": "glm-5.3",
+  "dusunme": "min",
+  "prompt": "Aşağıdaki cevap bozuk JSON içeriyor. Onu GEÇERLİ, TAM JSON'a çevir. Yalnızca JSON döndür — açıklama yok:\n\n",
+  "cevap": "Görünüşe göre mesajınızda düzeltilmesi gereken JSON içeriği bulunmuyor. Lütfen bozuk JSON'u gönderin, ben de onu geçerli JSON'a çevireyim.",
+  "dusunce_ilk2000": "The user provided a prompt but no actual broken JSON content. I should ask... but instruction says return only JSON. There's no JSON to fix. Best: ask for the content, or note nothing provided. I'll respond that no JSON was included.",
+  "sure_sn": 3.6,
+  "kullanim": {
+    "completion_tokens": 102,
+    "completion_tokens_details": {
+      "reasoning_tokens": 51
+    },
+    "prompt_tokens": 55,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 157
+  }
+}

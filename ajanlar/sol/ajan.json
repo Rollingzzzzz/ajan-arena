@@ -1,0 +1,95 @@
+{
+  "surum": 15,
+  "gecmis": [
+    {
+      "no": 1,
+      "tarih": "2026-09-09 19:51",
+      "ozet": "mac7'de t=980'de (7,12) civarında kendi bölgemde kısılıp öldüm; t=951–979 arası (7,10)-(9,14) bölgesindeki 15 dönüşlü mini döngüler, düz-koridor sayacının (max 12) gerçek boş alanı ölçemediğini kanıtlıyor (v1.003: 7 kayıp + 1 berabere). Her aday hamle için flood-fill alan sayımı, rakip kafasının 3 olası sonraki hücresini yasak sayan kafa-kafaya çarpışma filtresi ve alan avantajı + dist<=8'de rakip yönü×4 kesme noktasına koşan av modu ekledim.",
+      "turNo": 6
+    },
+    {
+      "no": 2,
+      "tarih": "2026-09-09 20:02",
+      "ozet": "mac7 t=980'te (7,12)'de kendi izimle çevrili kutuda öldüm; flood-fill eski kafa hücrelerini (b ve r kafası) boş saydığı için alan olduğundan büyüktü — artık her iki kafa da tik sonrası iz olarak bloklanıyor. v1.003'ün 7 kaybına karşı skoru teritoryal farka (benAlan−oppAlan) çevirdim: alan üstünken baskı, 55 hücre altında duvar-sarma (hug) bonusuyla dolanma; rakibin en iyi cevabı 2. kat BFS ile ölçülüyor. t=867–884'te 20 tik işe yaramayan sabit kesme noktası yerine, üstünlükte rakibe yaklaştıkça artan ceza (-2×mesafe) av baskısı koydum, head-on filtresi korundu.",
+      "turNo": 8
+    },
+    {
+      "no": 3,
+      "tarih": "2026-09-09 20:08",
+      "ozet": "mac7 t=951-980'de (7,10)→(9,14) arasındaki 29 tiklik iç içe spiral beni (7,12)'deki kendi kutuma gömdü; v002'nin tek katlı alan sayımı benzer alanlı adayları ayırt edemedi. v003'te her aday hamleyi rakibin 3 olası cevabının HERİNE karşı hesaplanan en-kötü-durum Voronoi farkıyla (benim−rakip hücre sayısı ×2) değerlendiren iki katlı motor kurdum; alan üstünlüğünde dist≤14'te kafa mesafesini küçülten av bonusu ekledim.",
+      "turNo": 9
+    },
+    {
+      "no": 4,
+      "tarih": "2026-09-09 21:26",
+      "ozet": "mac7 kaydinda t=980'te (7,12)'den (8,12)'ye girip ((8,11),(8,13),(9,12) komsularinin ucu da kendi izim olan) kutude oldum; t=951-980 arasi (7,10)-(14,14) mini spirali bu cepi 29 tikte kendi sardi. Buna karsi derinlik-8 koridor sayaci (<20 hucrede artan ceza), kutu aninda buyuk cezalar ve alan 1.5 kat ustunlukte rakip kacis alanini daraltan BASKI terimi ekledim. t=867-884'te 20 tiklik dist=4 paralel yarista kimse kesmedigi icin rakibin yonunde 2 hucre ongorulen kesme noktasina koşan av modu (dist<=8) ve tum hamleler tikaliysa cakisma hucresecerek cift olum/beraberligi kesin kayba tercih eden yedek katmani ekledim.",
+      "turNo": 16
+    },
+    {
+      "no": 5,
+      "tarih": "2026-09-09 21:40",
+      "ozet": "mac7 t=979-980'de (7,12)'de açık (7,11) sütunu (150+ hücre) varken 1 hücrelik (8,12) çukuru seçilip öldü; t=951-980 örmesi, bölge içi hamlelerde Voronoi farkını etkisiz bırakıp seçimi gürültüye bıraktığını gösterdi. v005'te bölgeler ayrışınca tam flood-alan birincil skor (aJonx5), her adayda kesilen hücre cezası ((alanBen-1-aJon)x2.5) ve iki kafanın da duvar sayılması eklendi. t=867-884 paralel yarıştaki 20 tıklik pasifliğe karşı dist<=12'de rakibin t+2 cephesine BFS varış süresiyle av bonusu ve alan 1.25x üstünlüğünde enIyiRx0.5 baskı terimi geldi.",
+      "turNo": 17
+    },
+    {
+      "no": 6,
+      "tarih": "2026-09-09 22:21",
+      "ozet": "mac11 504 tik: t=5028-5063 sol-alt cebinde (16,27)'nin 1 genişlik x=16 bacasına (satır 22-27 tek çıkışlı zincir) girilip kendi bölgede ölümlü koridora netleşti; flood alanı sayımı baca ile geniş alanı ayırt edemiyordu. v006'da ayrık modda birincil skor zorunlu koridor simülasyonu (dallanmaya kadarki adım + dalda en iyi flood alanı, ölümde -60), ortak modda ≤4 adımda ölüme giden koridorlara kademeli ceza ve Voronoi'da geride kalınca kotuDif ağırlığını 2'den 3.5'e çıkaran agresif mod eklendi; çakışma/av/baskı filtreleri korundu.",
+      "turNo": 18
+    },
+    {
+      "no": 7,
+      "tarih": "2026-09-10 17:12",
+      "ozet": "mac186 t=73199'ta (32,29) kenar hücresinde üç komşusu kendi izi olan cepede öldük; kıyasın 900 tiklik hayatta kalma yarışında eski v006 çekirdeği tüm oyunlarda hayatta kaldığı için üç aday da flood-fill + koridor + çakışma filtresi çekirdeğini harfiyen korudu. A yalnızca tüm komşular kapalıyken rakip kafasına giriş yedeği ekledi (normal oyunda davranış birebir aynı, kaybı beraberliğe çevirebilir); B buna 0.05'lik güvenli skor gürültüsü ve kademeli cep cezası (aJon≤2: -40, ≤4: -12) ekledi. C, tik≤5 için 2.0'lık açılış varyasyon gürültüsü ve ayrık modda 0.6 düz-doluş bonusuyla çeşitliliği güvenli havuzda tuttu (mac186'da 322 tikte 175 dönüşle dolduğumuz için).",
+      "turNo": 69
+    },
+    {
+      "no": 8,
+      "tarih": "2026-09-10 17:24",
+      "ozet": "mac186'da 322 tik boyunca 175 dönüşle alt bölgede zikzak dolup t=73199'ta (32,29)'da üç komşusu kendi izi olan bir cebinde öldüm; SAĞ ise t=73086'da tamamladığı üst çerçeve mega-bölgesinde rahatça hayatta kaldı. Üç aday da v007 çekirdeğini (aday filtreleri, flood alan, ortak-mod Voronoi/av blokları, kesilen ve koridor cezaları) harfiyen koruyor; farklar yalnız ayrık-mod bağ-kırıcılar ile son-dolgu ağırlıklarında. A ayrık modda düz-git bağ-kırıcısını 1.2'ye çıkarıp aJon<=2 cep cezası ekliyor, B ayrık modda aJon<80'de kesilen ağırlığını 1.2'ye düşürüp tik<=5 açılış gürültüsü ekliyor, C ise ayrık modda 2-adımlı en-çocuk kaçış alanı (enCocuk) terimiyle tek kaçış koridoru kuralını derinleştiriyor.",
+      "turNo": 70
+    },
+    {
+      "no": 9,
+      "tarih": "2026-09-10 17:47",
+      "ozet": "mac186 t=73199'da (32,29) kafasının 3 komşusu (31,29)/(33,29)/(32,28) kendi iziydi; 322 tikte 175 dönüşlük zikzak dolgu cep ölümü üretirken kıyas kodu 900 tiki tamamlandı. Üç aday da kıyası geçen v008 hayatta kalma çekirdeğini (aday filtresi, çakışma filtresi, güvenli dönüş yedekleri, bfsD) harfiyen koruyor: A ayrık modda düz-git bonusunu 1.2'ye çıkarıyor, B koridor<20 cezasını ortak modla kısıtlayıp aJon<80'de kesilen ağırlığını 1.2'ye düşürüyor, C aJon<=200'de greedy-rollout ölüm-adımı simülasyonunu birincil skor yapıyor.",
+      "turNo": 71
+    },
+    {
+      "no": 10,
+      "tarih": "2026-09-10 17:59",
+      "ozet": "patch döngüsü 1 adım; en iyi adım 1: Av modunu (avAktif) yalnızca erişilebilir alanımız rakibinkine eşit veya daha büyümüşken etkinleştirdim; gerideyken riskli kovalamaca yerine güvenli bölge oyununu tercih eder. (kıyas 4.5-2.5)",
+      "turNo": 72
+    },
+    {
+      "no": 11,
+      "tarih": "2026-09-10 18:08",
+      "ozet": "patch döngüsü 1 adım; en iyi adım 1: Av modunu temkinli hale getirdim: kovalamaca yalnızca ulaşılan alanım rakipten en az %15 fazla olduğunda devreye giriyor, böylece dengeli konumlarda gereksiz riskli yakın temas azalır. (kıyas 3.5-2.5)",
+      "turNo": 73
+    },
+    {
+      "no": 12,
+      "tarih": "2026-09-10 18:25",
+      "ozet": "patch döngüsü 1 adım; en iyi adım 1: Avcı modunu sıkılaştırdım: avAktif koşulunda mesafe eşiğini 12→9'a ve bölge üstünlüğü koşulunu 1.15→1.3'e çıkardım, böylece bot net önde ve yakınken değilse riskli av davranışına girmeyip hayatta kalmaya odaklanır. (kıyas 5-3)",
+      "turNo": 74
+    },
+    {
+      "no": 13,
+      "tarih": "2026-09-10 18:30",
+      "ozet": "patch döngüsü 2 adım; en iyi adım 2: Av modu aktif değilken (alan avantajı yokken) hamle sonrası rakip kafasına Manhattan mesafesi ≤4 olan adaylara kademeli ceza ekledim — yakın temasta çift ölüm (0.5'lik beraberlik) riskini azaltıp kazanına çevirmeyi hedefler. (kıyas 4-2.5)",
+      "turNo": 75
+    },
+    {
+      "no": 14,
+      "tarih": "2026-09-10 22:49",
+      "ozet": "patch döngüsü 3 adım; en iyi adım 2: 2. yedek (fallback) seçimini sıkladım: artık rakibin bir hamlede ulaşabildiği hücrelere (çift ölüm = kafa çarpışması) girmekten kaçınıyor, sadece hiç boş-çarpışmasız hücre kalmazsa en son çare olarak çarpışmayı kabul ediyor — S101'deki t=588 çift ölümü büyük olasılıkla bu fallback yolundan geldi; adım 1'in avAktif sıkılaştırması kazandırdığı için aynen korundu. (kıyas 4.5-1)",
+      "turNo": 78
+    },
+    {
+      "no": 15,
+      "tarih": "2026-09-11 01:11",
+      "ozet": "patch döngüsü 5 adım; en iyi adım 3: Nötr kalan yedek-flood-fill geri alındı; yerine çift ölümlerin ana kaynağı olan erken agresif avlanma sıkılaştırıldı (avActive eşikleri: mesafe<=5 ve alan>1.8x). (kıyas 5-3)",
+      "turNo": 79
+    }
+  ]
+}

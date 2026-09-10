@@ -1,0 +1,95 @@
+{
+  "surum": 15,
+  "gecmis": [
+    {
+      "no": 1,
+      "tarih": "2026-09-09 17:51",
+      "ozet": "mac7 (131 tik, berabere): t=980'de A(7,12) ve B(27,17) birbirinden ayrı bölmelere kilitlendi ve aynı tik öldü — 8 maçın 5 beraberliği tam olarak bu eşit bölmelerden geliyor. Eski 12 hücrelik koridor tahminini tam BFS alan ölçümü + Voronoi toprak skoruyla (benimUlaşılabilir - rakipUlaşılabilir) değiştirdim; rakibin bu tik girebileceği hücrelere -1e9 ceza koydum, böylece kafa-kafaya beraberlikler ve t=867'deki (21,14)/(22,15) tipi temasta kör sürüşler elendi. Alanım >150 ve rakibin 1.5 katındayken mesafe cezası 2→8'e çıkarak kesme noktasına sürüş yapan av moduna geçiyorum.",
+      "turNo": 1
+    },
+    {
+      "no": 2,
+      "tarih": "2026-09-09 19:40",
+      "ozet": "mac7 t=980'de A(7,12)/B(27,17) iki ayrı cebe kilitlenip aynı tikte tükendi — beraberliğin kök nedeni, bölünme sonrası 'kim önce biter' hesabının hiç yapılmamasıydı. v002'ye tuket() ekledim: bölge ayrışınca her iki kafa için acgözlü en-uzun-yol simulasyonu koşuyor, benimL-rakipL≥2 ise ayrılıp tüketme yarışını +1e6 ile seçiyorum, fark≤0 ise -1000 cezayla bağlı kalarak toprak kazanıyorum. Ayrıca avcı modundaki mesafe cezasını rakip kafası yerine 2 tik ilerideki kesme noktasına (rak.x+2*VX, kenar kelepeli) bağladım — önünü keserek öldürme netleşti.",
+      "turNo": 9
+    },
+    {
+      "no": 3,
+      "tarih": "2026-09-09 19:48",
+      "ozet": "mac7 t=980'de SAĞ(27,17) ile SOL(7,12) aynı tik ayrı ceplerde öldü: tuzak, v002 tuket()'inde s=derece*4+'duz' formülünün olu-son hücreyi (derece=0) en cazip görmesi ve cep hayatta-kalma süresini küçük saymasıydı. v003'te tuket iki modlu hale getirildi (max-derece + düz-öncelik, derece=0'a -1000 ceza, ikisinin max'ı alınır) ve bağlantısız dalda |fark|<=1 eşit cebe -5000 berabere-cezası eklendi. Ayrıca 2-ply paranoid minimax ekledim: her adayım rakibin 3 olası cevabına karşı simüle ediliyor ve en kötü skor seçiliyor; av eşiği benimSay>120 ve 1.35x alan üstünlüğüne sıkılaştırıldı.",
+      "turNo": 10
+    },
+    {
+      "no": 4,
+      "tarih": "2026-09-09 20:41",
+      "ozet": "mac7 t=980'de SAĞ(27,17) ile SOL(7,12) ayrı ceplerde aynı tik öldü: greedy tuket tahmini gerçek cep uzunluğunu küçük gösterip farkı yanıltıyordu. v004'te 22 hücreye kadar küçük ceplerde dfsUzun ile tam en-uzun-yol sayımı ve tuket'e rastgele 3. koşu ekledim; kesme noktası rakibin 2 tik önüne taşındı, rakipSay<80'de av ağırlığı 8→12, acik=0 girişe -500, eşit-cep (|fark|≤2) cezası -8000.",
+      "turNo": 11
+    },
+    {
+      "no": 5,
+      "tarih": "2026-09-09 21:42",
+      "ozet": "mac7 kaydında v004 7-1 kazandı; tek kayıp yine t=980 eşit-cep senkron ölümü, kapanış aşaması ise t=865-884'te 20 tik mesafe-4 paralel takitle verimsiz kaldı. v005'te çekirdeğe dokunmadım; iki ek: rakip 1 veya 0 yasal hamlede kaldığında (rakAday<=1) güvenli adayı +450 darboğaz bonusu ile sıkıştırma, ve kesme noktası mesafesini alan üstünlüğünde 2→1 tike indirerek kapanışı hızlandırma.",
+      "turNo": 12
+    },
+    {
+      "no": 6,
+      "tarih": "2026-09-10 14:24",
+      "ozet": "maç186 (t=72878-73199, 322 tik) analizinde SAĞ, SOL'u alt cep içinde kendi izine mahkum ederek kazandı (t=73199'da A kafası ~(31,29) kutusunda, B kafası (2,9) serbest) — v005 çekirdeği doğruydu, dokunmuyorum. Hafızadaki v002-v005 tekrarlı eşit-cep senkron ölümü (mac7 t=980) riskine karşı söz verdiğim asimetrik kuralı ekledim: bağlantısız cep dalında fark<1 iken ceza -15000 (fark 1-2 arası -8000, fark>=2 bonusu korundu). durum.tik maçlar arası sıfırlanmadığından (maç186 t=72878'de başladı) açılış varyasyonunu tik sayacı yerine izSay<14 hücre eşiğiyle kurup ilk hamlelerde düz olmayan yönlere rastgele +2.2 jitter ekledim.",
+      "turNo": 24
+    },
+    {
+      "no": 7,
+      "tarih": "2026-09-10 14:47",
+      "ozet": "Red kanıtındaki ölümler (S101 adayı t=626 (12,5), S1198 adayı t=612 (32,5) kendi koridorunda kapandı) adayların çekirdek hatasıydı; oysa v006 çekirdeği maç186'yı 322 tik hatasız oynayıp SOL'u kendi cebinde öldürdü (t=73199, SOL ~(31,29) kendi izine mahkum). v007'de kanıtlanmış çekirdeğe (Voronoi + 2-ply paranoid + ripSet + darbogaz + cep analizi) hiç dokunmadım; yalnızca try/catch ile çökme anında devreye giren flood-fill tabanlı guvenliDonus yedeği, kısa iz satırı ayrıştırma koruması (x<row.length) ve 'aday hamlede en az 1 kaçış koridoru' üst seviye cezası (-3e5) ekledim. Üç değişiklik de normal yolda kararları değiştirmez (acik=0 aday alan hesabıyla zaten ≤ -15000 alır), dolayısıyla hayatta kalma davranışı kıyası kazanan v006 ile birebir aynı kalır.",
+      "turNo": 26
+    },
+    {
+      "no": 8,
+      "tarih": "2026-09-10 14:53",
+      "ozet": "maç186'da v007 çekirdeği hatasız çalıştı: dış halkayı t=73119-73199 arası mühürleyip SOL'u (35,28)'de kendi izine mahkum ettik, t=72895/72926-72930/72978-72980'deki mesafe-2 paralel geçişler ripSet sayesinde çift ölümsüz atlatıldı. v008'de çekirdeğe dokunmadan 3 mikro ekleme yaptım: bağlantılı dalda benimSay>150 ve 1.5x alan üstünlüğünde -rakipSay*1.5 mühürleme/kerleme terimi, açılış jitter'ını 2.2→3.2+izSay<6'da +1.5'e çıkarma, guvenliDonus'ta eşit alan bağlarında 0.5 olasılıklı rastgele seçim. ripSet (-1e9), acik=0 (-3e5), 2-ply paranoid min ve eşit-cep asimetrik kuralı (-15000/-8000) aynen korundu.",
+      "turNo": 27
+    },
+    {
+      "no": 9,
+      "tarih": "2026-09-10 17:59",
+      "ozet": "patch döngüsü 1 adım; en iyi adım 1: degerlendir fonksiyonuna tek satır acil kural ekledim: bölgeler bağlıyken kendi ulaşılabilir alanım 18 hücrenin altına düşerse avlanma katsayılarını atlayıp saf hayatta kalma moduna geçiyor (alanı maksimize et + rakip kafasının öngörülen konumuna yakın kal). (kıyas 3-3)",
+      "turNo": 28
+    },
+    {
+      "no": 10,
+      "tarih": "2026-09-10 18:29",
+      "ozet": "patch döngüsü 1 adım; en iyi adım 1: Açılış fazında (izSay < 14) boş alana doğru ilk hamleleri tercih eden küçük bir açık-alan bonusu ekliyorum: yeni hücrenin boş komşu sayısı (acikA) bağlantılı modda skora +2 katkısıyla eklenecek şekilde mevcut satırı 'enKotu += acikA * 2 + Math.random() * 0.5;' yapıyorum (tek satır değişikliği). (kıyas 3-3)",
+      "turNo": 29
+    },
+    {
+      "no": 11,
+      "tarih": "2026-09-10 22:30",
+      "ozet": "patch döngüsü 5 adım; en iyi adım 1: Rakibin düz devam edeceği hücreye (rakDuzI) ek -1e9 ceza ekledim; tüm adaylar rakip erişiminde olsa bile en olası kafa-kafaya çarpışma hücresi en son tercih edilir. (kıyas 3-3)",
+      "turNo": 30
+    },
+    {
+      "no": 12,
+      "tarih": "2026-09-10 23:00",
+      "ozet": "patch döngüsü 3 adım; en iyi adım 1: degerlendir içindeki 'bağlı ama 18 hücreden küçük bölge' durumundaki +9e5 ÖDÜLÜNÜ -9e5 cezaya çevirdim; bot şu an kendi minik cebe hapsolmayı en iyi hamle sanıyor (ölüm tuzağı hatası). (kıyas 3-3)",
+      "turNo": 31
+    },
+    {
+      "no": 13,
+      "tarih": "2026-09-10 23:05",
+      "ozet": "patch döngüsü 2 adım; en iyi adım 1: Kesin ölüm olan kör uç hamlesinin cezasını (acikA===0) 3e5'ten 2e9'a yükselttim; böylece çarpışma riskli kare (-1e9) artık kör uca (-2e9) tercih edilir — beraberlik kabul edildiği için %50'lik hayatta kalma şansı, kesin ölümden daha iyidir. (kıyas 3-3)",
+      "turNo": 32
+    },
+    {
+      "no": 14,
+      "tarih": "2026-09-10 23:16",
+      "ozet": "patch döngüsü 3 adım; en iyi adım 2: tuket tahmincisine 4. bir 'duvar kenarından sarılan' mod ekledim ve tuketMax'ı bu modu da içerecek şekilde genişlettim; böylece bölünme ve ceb uzunluğu tahminleri dar alanlarda daha uzun hayatta kalma yolları bulur. (kıyas 6-0)",
+      "turNo": 33
+    },
+    {
+      "no": 15,
+      "tarih": "2026-09-10 23:25",
+      "ozet": "patch döngüsü 3 adım; en iyi adım 2: Tek başına ölümleri (S1198, t=400 tuzağı) önlemek için bağlantılı fazdaki 'küçük bölge panik' eşiğini benimSay<18'den benimSay<26'ya yükselttim; bot rakip duvarıyla çevrelenmeden önce alana öncelik verir. (kıyas 3-3)",
+      "turNo": 34
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "macNo": 2,
+  "taraf": "sag",
+  "surum": "v1.003",
+  "aktifKurallar": "R001,R002,R003,R004,R005,R006",
+  "sonuc": "kazandi",
+  "tik": 102,
+  "olum": {
+    "taraf": "sol",
+    "tik": 102,
+    "x": 31,
+    "y": 21
+  },
+  "kacisSayisi": 12,
+  "bolgeEgrisi": [
+    52,
+    55,
+    44,
+    10,
+    92
+  ],
+  "rakip": "avci",
+  "tarih": "2026-09-09T15:55:20.308Z"
+}

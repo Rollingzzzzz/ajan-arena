@@ -1,0 +1,162 @@
+{
+  "beyin": "avci",
+  "taraf": "sol",
+  "surum": "v1.003",
+  "taban": "kovalama skoru: rakip rotasina yaklas + bolge dengesi (motor kodunda sabit)",
+  "kurallar": [
+    {
+      "id": "R001",
+      "surum": "v1.001",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "onAciklik",
+        "op": "<=",
+        "deger": 4
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 0,
+          "bolge": 0.9
+        }
+      },
+      "gerekce": "Ölüm duvar dibinde önü kapanırken geldi; önümdeki açık hücre 4 ve altına düştüğünde hâlâ kovalamayı skorlamak bizi iz/duvar tuzağına sokar. Kaçış modu en açık yöne, yükseltilmiş bölge ağırlığı da o kaçışın alanı büyük tarafa olmasını sağlar.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:39"
+    },
+    {
+      "id": "R002",
+      "surum": "v1.001",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "bolgePayim",
+        "op": "<",
+        "deger": 40
+      },
+      "etki": {
+        "modDegistir": "genis",
+        "katsayi": {
+          "mesafe": 0.5,
+          "bolge": 1
+        }
+      },
+      "gerekce": "Bölge eğrisi 47'den 25'e düşerek duvara sıkışmaya kadar gitti; pay %40 altına indiğinde kovalama ağırlığını kesip bölge büyütmeye geçmek, erimeyi başladığı anda durdurur ve sonraki duvar ölümünü kökten önler.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:39"
+    },
+    {
+      "id": "R003",
+      "surum": "v1.002",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "kafaRiski",
+        "op": "==",
+        "deger": 1
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 0,
+          "bolge": 0.9
+        }
+      },
+      "gerekce": "Maç 50% bölge payıyla ve hiç kaçış tetiklenmeden bitti; bu, kafalar bitişikken kovalama skorlamaya devam edip kafa kafaya çarpışma desenidir — bitişik mesafede kovalama yazı-turadır, kaçış modunun en açık yöne sapması çarpışmayı rakip aleyhine çevirir.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:49"
+    },
+    {
+      "id": "R004",
+      "surum": "v1.002",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "rakipMesafe",
+        "op": "<=",
+        "deger": 4,
+        "ve": {
+          "alan": "onAciklik",
+          "op": "<=",
+          "deger": 6
+        }
+      },
+      "etki": {
+        "modDegistir": null,
+        "katsayi": {
+          "mesafe": 0.3,
+          "bolge": 0.8
+        }
+      },
+      "gerekce": "Ölüm rakibin yarısında, üst duvara yakın ve daralan koridorda kovalarken geldi; onAciklik 4'ün üstünde kaldığı için R001 hiç devreye girmedi (kacisSayisi=0), bu yüzden rakip 4 hücre içindeyken ve ön açıklık 6'nın altına inince kovalama ağırlığını kırıp bölgeye yönelmek o ölümcül son dönüşü iptal eder.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 15:49"
+    },
+    {
+      "id": "R005",
+      "surum": "v1.003",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "sonDuzluk",
+        "op": "==",
+        "deger": 1,
+        "ve": {
+          "alan": "bolgePayim",
+          "op": ">=",
+          "deger": 60
+        }
+      },
+      "etki": {
+        "modDegistir": "genis",
+        "katsayi": {
+          "mesafe": 0.2,
+          "bolge": 1
+        }
+      },
+      "gerekce": "Ölüm tık 196'da bölge payı 76% ve kacisSayisi=0 iken sağ duvar dibinde (x=43) geldi: tahta dolarken ve %60+ nefes üstünlüğüyle öndeyken kovalamaya devam etmek getirisizdir, çünkü rakip zaten daralan %24'lük alanında boğuluyor — bu durumda kovalama ağırlığını kırıp bölge moduna geçmek mevcut üstünlüğü ölümcül duvar kovalamasına değil galibiyete çevirir.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 16:35"
+    },
+    {
+      "id": "R006",
+      "surum": "v1.003",
+      "ekleyen": "🧠 AGENT-2 (GLM-5.3)",
+      "kosul": {
+        "alan": "olumTehlikesi",
+        "op": "==",
+        "deger": 1
+      },
+      "etki": {
+        "modDegistir": "kacis",
+        "katsayi": {
+          "mesafe": 0,
+          "bolge": 0.9
+        }
+      },
+      "gerekce": "Ölümde R001 ve R003 hiç tetiklenmedi çünkü onAciklik yalnızca düz ileriyi ölçüyor ve kafalar bitişik değildi; üç yönün de <2 açık hücre olduğu koridor tuzağını (olumTehlikesi) yakalayan hiçbir kural yok — bu durumda kaçış modunun en açık yöne sapması, yön değiştirmenin ölümle bittiği duvar dibi hamlesini seçilmeden önce iptal eder.",
+      "durum": "aktif",
+      "tarih": "2026-09-09 16:35"
+    }
+  ],
+  "gecmis": [
+    {
+      "surum": "v1.001",
+      "degisiklik": "2 yeni kural",
+      "hakem": "yeni 5 vs eski 5 (5 tohum)",
+      "tarih": "2026-09-09 15:39"
+    },
+    {
+      "surum": "v1.002",
+      "degisiklik": "2 yeni kural",
+      "hakem": "yeni 5 vs eski 3 (5 tohum)",
+      "tarih": "2026-09-09 15:49"
+    },
+    {
+      "surum": "v1.003",
+      "degisiklik": "2 yeni kural",
+      "degisenler": [
+        "➕ R005 eklendi: IF sonDuzluk == 1 VE bolgePayim >= 60 → mod=genis + mesafe=0.2 + bolge=1",
+        "➕ R006 eklendi: IF olumTehlikesi == 1 → mod=kacis + mesafe=0 + bolge=0.9"
+      ],
+      "hakem": "yeni 5 vs eski 3 (5 tohum)",
+      "tarih": "2026-09-09 16:35"
+    }
+  ]
+}
